@@ -159,7 +159,7 @@
   import { lineMapData } from '../../../../data/maps/lineMapData'
 
   import { ToastPosition, useToast } from 'vuestic-ui'
-  import ToastPositionPicker from './ToastPositionPicker.vue'
+  // import ToastPositionPicker from './ToastPositionPicker.vue'
 
   export default {
     setup() {
@@ -169,6 +169,8 @@
 
       const radioSelectedOption = ref('option1')
       const advancedList = ref('')
+
+      const showSkeleton = ref(true)
 
       const { init } = useToast()
 
@@ -228,6 +230,14 @@
           })
         }
       }
+
+      function showLoader() {
+        setTimeout(() => {
+          showSkeleton.value = false
+        }, 500)
+      }
+
+      showLoader()
       return {
         unitNo,
         bedrooms,
@@ -238,17 +248,18 @@
         advancedList,
         launchToast,
         radioSelectedOption,
+        showSkeleton,
       }
     },
     data() {
       return {
-        showSkeleton: true,
+        // showSkeleton: true,
       }
     },
     mounted() {
-      setTimeout(() => {
-        this.showSkeleton = false
-      }, 500)
+      // setTimeout(() => {
+      //   showSkeleton.value = false
+      // }, 500)
     },
   }
 </script>

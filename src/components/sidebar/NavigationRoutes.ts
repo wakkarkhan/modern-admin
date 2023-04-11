@@ -17,7 +17,7 @@ export default {
       meta: {
         icon: 'vuestic-iconset-maps',
       },
-      disabled: true,
+      // disabled: 'true',
       children: [
         {
           name: 'maplibre-maps',

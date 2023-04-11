@@ -222,7 +222,7 @@
 </template>
 
 <script lang="ts">
-  import MapLibreMap from './MapLibreMap.vue'
+  // import MapLibreMap from './MapLibreMap.vue'
   import { ref, Suspense } from 'vue'
   import { useI18n } from 'vue-i18n'
 
@@ -256,6 +256,7 @@
       const occupancy = ref('')
       const buildManager = ref('')
       const propertyManager = ref('')
+      const showSkeleton = ref(true)
 
       function getStatusColor(status: string) {
         if (status === 'paid') {
@@ -284,6 +285,14 @@
           icon: '',
         },
       ])
+
+      function showLoader() {
+        setTimeout(() => {
+          showSkeleton.value = false
+        }, 500)
+      }
+
+      showLoader()
       return {
         infoTiles,
         development,
@@ -297,17 +306,16 @@
         simpleOptions,
         users,
         t,
+        showSkeleton,
       }
     },
     data() {
-      return {
-        showSkeleton: true,
-      }
+      return {}
     },
     mounted() {
-      setTimeout(() => {
-        this.showSkeleton = false
-      }, 500)
+      // setTimeout(() => {
+      //   this.showSkeleton = false
+      // }, 500)
     },
   }
 </script>

@@ -167,9 +167,9 @@
 
 <script lang="ts">
   import { ref, Suspense } from 'vue'
-  import LeafletMap from './LeafletMap.vue'
+  // import LeafletMap from './LeafletMap.vue'
   import { ToastPosition, useToast } from 'vuestic-ui'
-  import ToastPositionPicker from './ToastPositionPicker.vue'
+  // import ToastPositionPicker from './ToastPositionPicker.vue'
   import { useI18n } from 'vue-i18n'
 
   import data from '../../../../../src/pages/admin/maps/data-tables/data/users.json'
@@ -181,6 +181,8 @@
       // const users = ref(data.slice(0, 6))
       const customHeaderAccordionValue = ref(false)
       const showBlurredModal = ref(false)
+
+      const showSkeleton = ref(true)
 
       const simpleOptions = ref([
         {
@@ -272,6 +274,14 @@
         }
       }
 
+      function showLoader() {
+        setTimeout(() => {
+          showSkeleton.value = false
+        }, 500)
+      }
+
+      showLoader()
+
       return {
         buildName,
         totalFloors,
@@ -288,17 +298,16 @@
         users,
         launchToast,
         t,
+        showSkeleton,
       }
     },
     data() {
-      return {
-        showSkeleton: true,
-      }
+      return {}
     },
     mounted() {
-      setTimeout(() => {
-        this.showSkeleton = false
-      }, 500)
+      // setTimeout(() => {
+      //   this.showSkeleton = false
+      // }, 500)
     },
   }
 </script>

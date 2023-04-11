@@ -124,6 +124,7 @@
     setup() {
       const showBlurredModal = ref(false)
       const { t } = useI18n()
+      const showSkeleton = ref(true)
 
       const users = [
         {
@@ -172,21 +173,28 @@
         },
       ]
 
+      function showLoader() {
+        setTimeout(() => {
+          showSkeleton.value = false
+        }, 500)
+      }
+
+      showLoader()
+
       return {
         users,
         showBlurredModal,
         t,
+        showSkeleton,
       }
     },
     data() {
-      return {
-        showSkeleton: true,
-      }
+      return {}
     },
     mounted() {
-      setTimeout(() => {
-        this.showSkeleton = false
-      }, 500)
+      // setTimeout(() => {
+      //   this.showSkeleton = false
+      // }, 500)
     },
   }
 </script>

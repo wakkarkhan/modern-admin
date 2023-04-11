@@ -171,7 +171,7 @@
   // @ts-ignore
   import { yandexMap as YandexMap, ymapMarker as YandexMapMarker } from 'vue-yandex-maps'
   import { ToastPosition, useToast } from 'vuestic-ui'
-  import ToastPositionPicker from './ToastPositionPicker.vue'
+  // import ToastPositionPicker from './ToastPositionPicker.vue'
   import { useI18n } from 'vue-i18n'
 
   export default {
@@ -187,6 +187,7 @@
         },
       ])
 
+      const showSkeleton = ref(true)
       const floor = ref('')
       const customHeaderAccordionValue = ref(false)
       const showBlurredModal = ref(false)
@@ -264,6 +265,14 @@
           icon: '',
         },
       ])
+
+      function showLoader() {
+        setTimeout(() => {
+          showSkeleton.value = false
+        }, 500)
+      }
+
+      showLoader()
       return {
         floor,
         customHeaderAccordionValue,
@@ -273,17 +282,16 @@
         popover,
         launchToast,
         t,
+        showSkeleton,
       }
     },
     data() {
-      return {
-        showSkeleton: true,
-      }
+      return {}
     },
     mounted() {
-      setTimeout(() => {
-        this.showSkeleton = false
-      }, 500)
+      // setTimeout(() => {
+      //   this.showSkeleton = false
+      // }, 500)
     },
   }
 </script>

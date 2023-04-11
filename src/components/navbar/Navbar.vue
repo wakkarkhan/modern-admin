@@ -1,5 +1,5 @@
 <template>
-  <va-navbar class="app-layout-navbar">
+  <!-- <va-navbar class="app-layout-navbar">
     <template #left>
       <div class="left">
         <va-icon-menu-collapsed
@@ -38,7 +38,8 @@
     <template #right>
       <app-navbar-actions class="app-navbar__actions md5 lg4" :user-name="userName" />
     </template>
-  </va-navbar>
+  </va-navbar> -->
+  <div></div>
 </template>
 
 <script setup>

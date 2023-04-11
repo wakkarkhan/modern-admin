@@ -1,0 +1,73 @@
+[
+  {
+    "id":"1",
+   "dev_name": "Building A",
+    "floor": "floor 9",
+    "unit_id": "#####",
+    "unit_type": "Penthouse",
+    "unit_number":"90",
+    "bedrooms": "3 BR",
+    "occupancy": "Vacant",
+    "build_manager": "manager A",
+    "property_manager": "username"
+  },
+  {
+    "id":"2",
+    "dev_name": "Building B",
+    "floor": "floor 7",
+    "unit_id": "#####",
+    "unit_type": "Penthouse",
+    "unit_number":"70",
+    "bedrooms": "3 BR",
+    "occupancy": "Vacant",
+    "build_manager": "manager A",
+    "property_manager": "username"
+  },
+  {
+    "id":"3",
+    "dev_name": "Building C",
+    "floor": "floor 3",
+    "unit_id": "#####",
+    "unit_type": "Apartment",
+    "unit_number":"56",
+    "bedrooms": "3 BR",
+    "occupancy": "Vacant",
+    "build_manager": "manager A",
+    "property_manager": "username"
+  },{
+  "id":"4",
+   "dev_name": "Building A",
+    "floor": "floor 9",
+    "unit_id": "#####",
+    "unit_type": "Penthouse",
+    "unit_number":"90",
+    "bedrooms": "3 BR",
+    "occupancy": "Vacant",
+    "build_manager": "manager A",
+    "property_manager": "username"
+  },
+  {
+    "id":"5",
+    "dev_name": "Building B",
+    "floor": "floor 7",
+    "unit_id": "#####",
+    "unit_type": "Penthouse",
+    "unit_number":"70",
+    "bedrooms": "3 BR",
+    "occupancy": "Vacant",
+    "build_manager": "manager A",
+    "property_manager": "username"
+  },
+  {
+    "id":"6",
+    "dev_name": "Building C",
+    "floor": "floor 3",
+    "unit_id": "#####",
+    "unit_type": "Apartment",
+    "unit_number":"56",
+    "bedrooms": "3 BR",
+    "occupancy": "Vacant",
+    "build_manager": "manager A",
+    "property_manager": "username"
+  }
+]

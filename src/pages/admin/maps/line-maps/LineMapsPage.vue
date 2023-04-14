@@ -317,11 +317,11 @@
         },
         {
           id: 2,
-          description: 'square Meter',
+          description: 'square meter',
         },
       ])
 
-      const toastText = ref('Unit added successfully!')
+      const toastText = ref('Unit added successfully!!!')
       const toastDuration = ref(2500)
       const toastPosition = ref<ToastPosition>('top-right')
 
@@ -437,7 +437,7 @@
             .editUnit(data)
             .then((response) => {
               init({
-                message: toastText.value,
+                message: 'Unit updated successfully!!!',
                 position: toastPosition.value,
                 duration: Number(toastDuration.value),
                 color: 'primary',
@@ -510,7 +510,10 @@
             size.value = response.data.data.size
             premise.value = response.data.data.premiseNo
             propertyID.value = response.data.data.managerId
-            sizeUnit.value = response.data.data.sizeType
+            sizeUnit.value.id = response.data.data.sizeType
+            if (sizeUnit.value.id === 0) sizeUnit.value.description = 'meter'
+            else sizeUnit.value.description = 'square meter'
+
             radioSelectedOption.value = response.data.data.unitType
           })
           .catch()

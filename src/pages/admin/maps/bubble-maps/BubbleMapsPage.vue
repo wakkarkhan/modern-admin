@@ -113,6 +113,11 @@
             <h5>No records found</h5>
           </template>
 
+          <template #cell(occupy)="{ rowData }">
+            <div v-if="rowData.occupy === 0">Vacant</div>
+            <div v-if="rowData.occupy === 1">Occupied</div>
+          </template>
+
           <template #cell(actions)="{ rowData }">
             <va-popover :color="popover.color" message="Edit Details" placement="top" open>
               <router-link

@@ -83,7 +83,7 @@
             message: toastText.value,
             position: toastPosition.value,
             duration: Number(toastDuration.value),
-            color: 'success',
+            color: 'primary',
           })
 
           // setLogin.setToken(response.data.data.access_token)

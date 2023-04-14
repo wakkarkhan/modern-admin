@@ -12,6 +12,13 @@ export default {
   },
   routes: [
     {
+      name: 'dashboard',
+      displayName: 'menu.dashboard',
+      meta: {
+        icon: 'vuestic-iconset-dashboard',
+      },
+    },
+    {
       name: 'maps',
       displayName: 'Property Management',
       meta: {
@@ -41,13 +48,6 @@ export default {
         // },
       ],
     },
-    // {
-    //   name: 'dashboard',
-    //   displayName: 'menu.dashboard',
-    //   meta: {
-    //     icon: 'vuestic-iconset-dashboard',
-    //   },
-    // },
     // {
     //   name: 'statistics',
     //   displayName: 'menu.statistics',

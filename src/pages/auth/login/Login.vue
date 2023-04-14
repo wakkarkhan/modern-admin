@@ -7,6 +7,11 @@
       :label="t('auth.email')"
       :error="!!emailErrors.length"
       :error-messages="emailErrors"
+      @mousedown="
+        () => {
+          emailErrors = []
+        }
+      "
     />
 
     <va-input
@@ -16,10 +21,16 @@
       :label="t('auth.password')"
       :error="!!passwordErrors.length"
       :error-messages="passwordErrors"
+      @mousedown="
+        () => {
+          passwordErrors = []
+        }
+      "
     />
 
     <div class="auth-layout__options d-flex align-center justify-space-between">
-      <va-checkbox v-model="keepLoggedIn" class="mb-0" :label="t('auth.keep_logged_in')" />
+      <!-- <va-checkbox v-model="keepLoggedIn" class="mb-0" :label="t('auth.keep_logged_in')" /> -->
+      <div></div>
       <router-link class="ml-1 va-link" :to="{ name: 'recover-password' }">{{
         t('auth.recover_password')
       }}</router-link>
@@ -35,6 +46,8 @@
   import { computed, ref } from 'vue'
   import { useRouter } from 'vue-router'
   import { useI18n } from 'vue-i18n'
+  import service from '../../../../src/auth/service'
+  import { ToastPosition, useToast } from 'vuestic-ui'
   const { t } = useI18n()
 
   const email = ref('')
@@ -44,14 +57,56 @@
   const passwordErrors = ref<string[]>([])
   const router = useRouter()
 
+  const { init } = useToast()
+  const toastText = ref('Login Successful!')
+  const toastDuration = ref(2500)
+  const toastPosition = ref<ToastPosition>('top-right')
+
   const formReady = computed(() => !emailErrors.value.length && !passwordErrors.value.length)
 
+  const setLogin = new service()
   function onsubmit() {
-    if (!formReady.value) return
+    if (email.value !== '' && password.value !== '') {
+      var data = JSON.stringify({
+        email: email.value,
+        password: password.value,
+        deviceToken: '123',
+      })
+      setLogin
+        .login(data)
+        .then((response) => {
+          // localStorage.setItem('userData', JSON.stringify(response))
+          localStorage.setItem('accessToken', JSON.stringify(response.data.data.token))
+          localStorage.setItem('isUser', 'true')
 
-    emailErrors.value = email.value ? [] : ['Email is required']
-    passwordErrors.value = password.value ? [] : ['Password is required']
+          init({
+            message: toastText.value,
+            position: toastPosition.value,
+            duration: Number(toastDuration.value),
+            color: 'success',
+          })
 
-    router.push({ name: 'dashboard' })
+          // setLogin.setToken(response.data.data.access_token)
+          // service.setRefreshToken(response.data.refresh_token)
+          return router.push({ name: 'dashboard' })
+        })
+        .catch((error) => {
+          console.log(error.response)
+          emailErrors.value = ['Invalid Credentials']
+          passwordErrors.value = ['Invalid Credentials']
+          // init({
+          //     message: 'Invalid Credentials',
+          //     position: 'top-right',
+          //     duration: Number(2500),
+          //     color: 'danger',
+          //   })
+        })
+    } else {
+      emailErrors.value = email.value ? [] : ['Email is required']
+      passwordErrors.value = password.value ? [] : ['Password is required']
+      return
+    }
+
+    // router.push({ name: 'dashboard' })
   }
 </script>

@@ -10,7 +10,7 @@ import UIRoute from '../pages/admin/ui/route'
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/:catchAll(.*)',
-    redirect: { name: 'maplibre-maps' },
+    redirect: { name: 'login' },
   },
   {
     name: 'admin',
@@ -32,7 +32,7 @@ const routes: Array<RouteRecordRaw> = [
           },
           {
             name: 'yandex-maps',
-            path: 'floors',
+            path: '/:buildingId/floors',
             component: () => import('../pages/admin/maps/yandex-maps/YandexMapsPage.vue'),
             meta: {
               wikiLink: 'https://github.com/epicmaxco/vuestic-admin/wiki/Maps',
@@ -48,7 +48,7 @@ const routes: Array<RouteRecordRaw> = [
           },
           {
             name: 'bubble-maps',
-            path: 'units',
+            path: '/:buildingId/floors/:floorId/units',
             component: () => import('../pages/admin/maps/bubble-maps/BubbleMapsPage.vue'),
             meta: {
               wikiLink: 'https://github.com/epicmaxco/vuestic-admin/wiki/Maps',
@@ -56,12 +56,21 @@ const routes: Array<RouteRecordRaw> = [
           },
           {
             name: 'line-maps',
-            path: 'add-units',
+            path: '/:buildingId/floors/:floorId/add-units',
             component: () => import('../pages/admin/maps/line-maps/LineMapsPage.vue'),
             meta: {
               wikiLink: 'https://github.com/epicmaxco/vuestic-admin/wiki/Maps',
             },
           },
+          // {
+          //   name: 'edit-units',
+          //   path: '/:buildingId/floors/:floorId/edit-units',
+          //   component: () => import('../pages/admin/maps/line-maps/EditUnit.vue'),
+          //   meta: {
+          //     wikiLink: 'https://github.com/epicmaxco/vuestic-admin/wiki/Maps',
+          //   },
+
+          // },
         ],
       },
       {

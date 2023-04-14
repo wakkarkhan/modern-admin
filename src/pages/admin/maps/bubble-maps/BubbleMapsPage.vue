@@ -5,43 +5,88 @@
     <div class="row">
       <div class="flex md12">
         <div className="d-flex align-items-center" @click="$router.back()">
-          <h5 style="width: fit-content; cursor: pointer"><b>&lt; &nbsp;</b> Units</h5>
+          <p style="width: fit-content; cursor: pointer; font-size: 18px"><b>&lt; &nbsp;Units</b></p>
         </div>
       </div>
     </div>
 
     <div class="row">
       <div class="flex sm4 ml-auto" style="text-align: end">
-        <va-button preset="plain" icon-right="fa-arrow-circle-right" size="large" :to="{ name: 'line-maps' }">
+        <va-button
+          preset="plain"
+          icon-right="fa-arrow-circle-right"
+          size="large"
+          :to="{
+            name: 'line-maps',
+            params: { buildingId: buildingId, floorId: floorId },
+            state: {
+              totalFloors: totalFloors,
+              managerId: buildingManager,
+              buildingName: buildingName,
+              buildingId: buildingId,
+              floorId: floorId,
+            },
+          }"
+        >
           Add Unit
         </va-button>
       </div>
     </div>
 
     <div class="row">
-      <div class="flex xs12 sm6 md4">
-        <va-card stripe stripe-color="info">
+      <div class="flex xs12 sm6 md3">
+        <va-card stripe stripe-color="primary">
           <va-card-title> Building Name </va-card-title>
           <va-card-content>
-            <p class="rich-theme-card-text">Building ABC</p>
+            <div class="row">
+              <div class="flex xs3">
+                <div style="background-color: #eef1f5; border-radius: 50%; width: fit-content; padding: 15px 15px">
+                  <i class="fa fa-building fa-lg" size="large"></i>
+                </div>
+              </div>
+              <div class="flex xs7">
+                <p class="pt-3" style="font-size: 18px">{{ buildingName }}</p>
+              </div>
+            </div>
           </va-card-content>
         </va-card>
       </div>
 
-      <div class="flex xs12 sm6 md4">
-        <va-card stripe stripe-color="info">
+      <div class="flex xs12 sm6 md3">
+        <va-card stripe stripe-color="primary">
           <va-card-title> Total Floors </va-card-title>
           <va-card-content>
-            <p class="rich-theme-card-text">1142</p>
+            <div class="row">
+              <div class="flex xs3">
+                <div style="background-color: #eef1f5; border-radius: 50%; width: fit-content; padding: 15px 15px">
+                  <i class="fa fa-th fa-lg" size="large"></i>
+                </div>
+              </div>
+              <div class="flex xs7">
+                <p class="pt-3" style="font-size: 18px">{{ totalFloors }}</p>
+              </div>
+            </div>
+
+            <!-- <p class="rich-theme-card-text">{{ totalFloors }}</p> -->
           </va-card-content>
         </va-card>
       </div>
 
-      <div class="flex xs12 sm6 md4">
-        <va-card stripe stripe-color="info">
+      <div class="flex xs12 sm6 md3">
+        <va-card stripe stripe-color="primary">
           <va-card-title> Building Manager </va-card-title>
           <va-card-content>
-            <p class="rich-theme-card-text">John Doe</p>
+            <div class="row">
+              <div class="flex xs3">
+                <div style="background-color: #eef1f5; border-radius: 50%; width: fit-content; padding: 15px 15px">
+                  <i class="fa fa-user fa-lg" size="large"></i>
+                </div>
+              </div>
+              <div class="flex xs7">
+                <p class="pt-3" style="font-size: 18px">{{ buildingManager }}</p>
+              </div>
+            </div>
+            <!-- <p class="rich-theme-card-text">{{ buildingManager }}</p> -->
           </va-card-content>
         </va-card>
       </div>
@@ -52,7 +97,69 @@
     <va-card class="flex mb-4 mt-2">
       <!-- <va-card-title>{{ t('tables.basic') }}</va-card-title> -->
       <va-card-content>
-        <div class="table-wrapper">
+        <div class="row">
+          <div class="flex xs12 pt-0">
+            <p style="font-size: 20px"><b>All Units</b></p>
+          </div>
+        </div>
+        <va-data-table
+          :items="units"
+          :columns="columns"
+          :per-page="10"
+          :current-page="currentPage"
+          :loading="isTableLoading"
+        >
+          <template #cell(empty)>
+            <h5>No records found</h5>
+          </template>
+
+          <template #cell(actions)="{ rowData }">
+            <va-popover :color="popover.color" message="Edit Details" placement="top" open>
+              <router-link
+                :to="{
+                  name: 'line-maps',
+                  params: { buildingId: buildingId, floorId: floorId },
+                  state: {
+                    totalFloors: totalFloors,
+                    managerId: buildingManager,
+                    buildingName: buildingName,
+                    buildingId: buildingId,
+                    floorId: floorId,
+                    unitId: rowData._id,
+                  },
+                }"
+              >
+                <va-icon class="mr-2" name="edit" color="#262824" style="cursor: pointer" />
+              </router-link>
+            </va-popover>
+
+            <va-popover :color="popover.color" message="Delete" placement="top" open>
+              <va-icon
+                class="mr-2"
+                name="delete"
+                color="#262824"
+                style="cursor: pointer"
+                @click="
+                  () => {
+                    showBlurredModal = true
+                    setIdtoDelete(rowData._id)
+                  }
+                "
+              />
+            </va-popover>
+          </template>
+          <template #bodyAppend>
+            <tr class="">
+              <td colspan="12">
+                <div class="table-example--pagination mt-4">
+                  <va-pagination v-model="currentPage" input :pages="totalPages" />
+                </div>
+              </td>
+            </tr>
+          </template>
+        </va-data-table>
+
+        <!-- <div class="table-wrapper">
           <table class="va-table" style="width: -webkit-fill-available">
             <thead>
               <tr width="100%">
@@ -83,9 +190,9 @@
                 <td>{{ user.occupancy }}</td>
                 <td>{{ user.property_manager }}</td>
                 <td style="text-align: center">
-                  <!-- <va-popover :color="popover.color" :message="popover.message" placement="top" open>
+                  <va-popover :color="popover.color" :message="popover.message" placement="top" open>
                     <va-button class="mr-2 mb-2" color="dark" :to="{ name: 'bubble-maps' }">Units</va-button>
-                  </va-popover> -->
+                  </va-popover>
 
                   <va-button class="mr-2 mb-2" color="warning" :to="{ name: 'line-maps' }"> Edit</va-button>
                   <va-button class="mr-2 mb-2" color="danger" @click="showBlurredModal = true"> Delete</va-button>
@@ -93,7 +200,7 @@
               </tr>
             </tbody>
           </table>
-        </div>
+        </div> -->
       </va-card-content>
     </va-card>
 
@@ -103,28 +210,54 @@
       :ok-text="t('modal.confirm')"
       :cancel-text="t('modal.cancel')"
       blur
+      @ok="deleteUnit()"
     />
-    <!-- <div class="row">
-      <div class="flex md12 xs12">
-        <va-card class="bubble-maps-page__widget" title="Bubble Maps">
-          <bubble-map :map-data="bubbleMapData" style="height: 75vh" />
-        </va-card>
-      </div>
-    </div> -->
   </div>
 </template>
 
 <script lang="ts">
   import { ref } from 'vue'
   import { useI18n } from 'vue-i18n'
+  import { useRoute } from 'vue-router'
+  import { ToastPosition, useToast } from 'vuestic-ui'
+
   // import BubbleMap from './BubbleMap.vue'
   // import { bubbleMapData } from '../../../../data/maps/bubbleMapData'
+  import service from '../../../../../src/auth/service'
 
   export default {
     setup() {
+      const temp = new service()
+      const route = useRoute()
       const showBlurredModal = ref(false)
       const { t } = useI18n()
       const showSkeleton = ref(true)
+
+      const buildingName = ref('')
+      const totalFloors = ref('')
+      const buildingManager = ref('')
+      const buildingId = ref('')
+      const floorId = ref('')
+
+      const units = ref([])
+      const perPage = ref(10)
+      const currentPage = ref(1)
+      const totalPages = ref(1)
+
+      const isTableLoading = ref(true)
+      const { init } = useToast()
+
+      const columns = [
+        { key: 'id', label: 'Property ID', sortable: true },
+        { key: 'unitNo', label: 'Unit No', sortable: true },
+        { key: 'unitType', label: 'unit Type', sortable: true },
+        { key: 'bedrooms', sortable: true },
+        { key: 'size', label: 'size', sortable: true },
+        { key: 'premiseNo', label: 'premise No', sortable: true },
+        { key: 'occupy', label: 'occupancy', sortable: true },
+        { key: 'managerId', label: 'property manager', sortable: true },
+        { key: 'actions', label: '' },
+      ]
 
       const users = [
         {
@@ -173,29 +306,113 @@
         },
       ]
 
+      const popover = ref({
+        message: 'Go to Units',
+        color: 'secondary',
+      })
+
+      const idToDelete = ref('')
+
+      function setIdtoDelete(id: string) {
+        idToDelete.value = id
+      }
+
+      function deleteUnit() {
+        console.log(idToDelete.value)
+        temp
+          .deleteUnit(idToDelete.value)
+          .then(() => {
+            getAllUnits()
+            init({
+              message: 'Unit Deleted Successfully',
+              position: 'top-right',
+              duration: Number(2500),
+              color: 'primary',
+            })
+          })
+          .catch()
+      }
+
       function showLoader() {
         setTimeout(() => {
           showSkeleton.value = false
         }, 500)
       }
 
-      showLoader()
+      function getParams() {
+        buildingName.value = window.history.state.buildingName
+        totalFloors.value = window.history.state.totalFloors
+        buildingManager.value = window.history.state.managerId
+        buildingId.value = window.history.state.buildingId
+        floorId.value = window.history.state.floorId
+      }
 
+      function getAllUnits() {
+        var data = JSON.stringify({
+          page: 1,
+          limit: 100,
+          search: '',
+          clusterId: null,
+          communityId: null,
+          unitGroupId: null,
+          floorId: route.params.floorId,
+        })
+        temp
+          .getAllUnits(data)
+          .then((response) => {
+            units.value = response.data.data.unit_data
+            if (perPage.value && perPage.value !== 0) totalPages.value = Math.ceil(units.value.length / perPage.value)
+            else totalPages.value = units.value.length
+            isTableLoading.value = false
+
+            if (units.value.length === 0) totalPages.value = 1
+          })
+          .catch((error) => {
+            console.log(error.response)
+            isTableLoading.value = false
+          })
+      }
+
+      function pages() {
+        return perPage.value && perPage.value !== 0 ? Math.ceil(units.value.length / perPage.value) : units.value.length
+      }
+
+      showLoader()
+      getParams()
+      getAllUnits()
+      pages()
       return {
         users,
         showBlurredModal,
         t,
         showSkeleton,
+        buildingName,
+        totalFloors,
+        buildingManager,
+        buildingId,
+        units,
+        perPage,
+
+        currentPage,
+
+        isTableLoading,
+        columns,
+        popover,
+        floorId,
+        totalPages,
+        deleteUnit,
+        idToDelete,
+        setIdtoDelete,
       }
     },
-    data() {
-      return {}
-    },
-    mounted() {
-      // setTimeout(() => {
-      //   this.showSkeleton = false
-      // }, 500)
-    },
+    // data() {
+    //   return {}
+    // },
+    // computed: {
+    //   pages() {
+    //     return this.perPage && this.perPage !== 0 ? Math.ceil(this.units.length / this.perPage) : this.units.length
+    //   },
+    // },
   }
 </script>
 
@@ -208,5 +425,10 @@
 
   .va-table td {
     vertical-align: unset !important;
+  }
+
+  .table-example--pagination {
+    display: flex;
+    justify-content: center;
   }
 </style>

@@ -10,6 +10,7 @@
       </div>
     </div>
 
+    <!-- Add units button -->
     <div class="row">
       <div class="flex sm4 ml-auto" style="text-align: end">
         <va-button
@@ -92,8 +93,7 @@
       </div>
     </div>
 
-    <!-- <va-button class="mr-2 mb-2"  :to="{ name: 'line-maps' }"> Add Unit</va-button> -->
-
+    <!-- All units table -->
     <va-card class="flex mb-4 mt-2">
       <!-- <va-card-title>{{ t('tables.basic') }}</va-card-title> -->
       <va-card-content>
@@ -102,13 +102,7 @@
             <p style="font-size: 20px"><b>All Units</b></p>
           </div>
         </div>
-        <va-data-table
-          :items="units"
-          :columns="columns"
-          :per-page="10"
-          :current-page="currentPage"
-          :loading="isTableLoading"
-        >
+        <va-data-table :items="units" :columns="columns" :current-page="currentPage" :loading="isTableLoading">
           <template #cell(empty)>
             <h5>No records found</h5>
           </template>
@@ -116,6 +110,10 @@
           <template #cell(occupy)="{ rowData }">
             <div v-if="rowData.occupy === 0">Vacant</div>
             <div v-if="rowData.occupy === 1">Occupied</div>
+          </template>
+          <template #cell(size)="{ rowData }">
+            <div v-if="rowData.sizeType === 0">{{ rowData.size }} m</div>
+            <div v-if="rowData.sizeType === 1">{{ rowData.size }} Sq m</div>
           </template>
 
           <template #cell(actions)="{ rowData }">
@@ -157,7 +155,74 @@
             <tr class="">
               <td colspan="12">
                 <div class="table-example--pagination mt-4">
-                  <va-pagination v-model="currentPage" input :pages="totalPages" />
+                  <!-- <va-pagination v-model="currentPage" input :pages="totalPages" /> -->
+                  <va-pagination v-model="currentPage" input :pages="totalPages">
+                    <!-- first page -->
+                    <template #firstPageLink="{ disabled }">
+                      <va-button
+                        preset="primary"
+                        :disabled="disabled"
+                        aria-label="go prev page"
+                        @click="
+                          () => {
+                            currentPage = 1
+                            getAllUnits()
+                          }
+                        "
+                      >
+                        <i class="fa fa-angle-double-left" size="large"></i>
+                      </va-button>
+                    </template>
+
+                    <!-- previous page -->
+                    <template #prevPageLink="{ disabled }">
+                      <va-button
+                        preset="primary"
+                        :disabled="disabled"
+                        aria-label="go prev page"
+                        @click="
+                          () => {
+                            currentPage = currentPage - 1
+                            getAllUnits()
+                          }
+                        "
+                      >
+                        <i class="fa fa-angle-left" size="large"></i>
+                      </va-button>
+                    </template>
+                    <!-- next page -->
+                    <template #nextPageLink="{ disabled }">
+                      <va-button
+                        preset="primary"
+                        :disabled="disabled"
+                        aria-label="go next page"
+                        @click="
+                          () => {
+                            currentPage = currentPage + 1
+                            getAllUnits()
+                          }
+                        "
+                      >
+                        <i class="fa fa-angle-right" size="large"></i>
+                      </va-button>
+                    </template>
+                    <!-- last page -->
+                    <template #lastPageLink="{ disabled }">
+                      <va-button
+                        preset="primary"
+                        :disabled="disabled"
+                        aria-label="go prev page"
+                        @click="
+                          () => {
+                            currentPage = totalPages
+                            getAllUnits()
+                          }
+                        "
+                      >
+                        <i class="fa fa-angle-double-right" size="large"></i>
+                      </va-button>
+                    </template>
+                  </va-pagination>
                 </div>
               </td>
             </tr>
@@ -322,6 +387,7 @@
         idToDelete.value = id
       }
 
+      //  delete unit
       function deleteUnit() {
         console.log(idToDelete.value)
         temp
@@ -329,13 +395,20 @@
           .then(() => {
             getAllUnits()
             init({
-              message: 'Unit Deleted Successfully',
+              message: 'Unit Deleted Successfully!',
               position: 'top-right',
               duration: Number(2500),
               color: 'primary',
             })
           })
-          .catch()
+          .catch((error) => {
+            init({
+              message: `${error.response.data.message}`,
+              position: 'top-right',
+              duration: Number(2500),
+              color: 'danger',
+            })
+          })
       }
 
       function showLoader() {
@@ -344,6 +417,7 @@
         }, 500)
       }
 
+      // getting params and state from route
       function getParams() {
         buildingName.value = window.history.state.buildingName
         totalFloors.value = window.history.state.totalFloors
@@ -352,10 +426,11 @@
         floorId.value = window.history.state.floorId
       }
 
+      // fetching all units
       function getAllUnits() {
         var data = JSON.stringify({
-          page: 1,
-          limit: 100,
+          page: currentPage.value,
+          limit: perPage.value,
           search: '',
           clusterId: null,
           communityId: null,
@@ -366,15 +441,22 @@
           .getAllUnits(data)
           .then((response) => {
             units.value = response.data.data.unit_data
-            if (perPage.value && perPage.value !== 0) totalPages.value = Math.ceil(units.value.length / perPage.value)
+            if (perPage.value && perPage.value !== 0)
+              totalPages.value = Math.ceil(response.data.data.state.data_count / perPage.value)
             else totalPages.value = units.value.length
             isTableLoading.value = false
 
             if (units.value.length === 0) totalPages.value = 1
           })
           .catch((error) => {
-            console.log(error.response)
+            // console.log(error.response)
             isTableLoading.value = false
+            init({
+              message: `${error.response.data.message}`,
+              position: 'top-right',
+              duration: Number(2500),
+              color: 'danger',
+            })
           })
       }
 
@@ -397,9 +479,7 @@
         buildingId,
         units,
         perPage,
-
         currentPage,
-
         isTableLoading,
         columns,
         popover,
@@ -408,6 +488,7 @@
         deleteUnit,
         idToDelete,
         setIdtoDelete,
+        getAllUnits,
       }
     },
     // data() {

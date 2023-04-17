@@ -208,6 +208,45 @@
                 </template> -->
             </div>
 
+            <!-- Property ID-->
+            <div class="flex md4 sm6 xs12">
+              Manager Id:
+              <va-input
+                v-model="managerID"
+                :error="!!managerIDErrors.length"
+                :error-messages="managerIDErrors"
+                class="mt-1"
+                @mousedown="
+                  () => {
+                    managerIDErrors = []
+                  }
+                "
+              />
+              <!-- <template #prepend>
+                 
+                  <p style="width: 100px">Property Id:</p>
+                </template> -->
+            </div>
+            <div class="flex md4 sm6 xs12">
+              Occupancy:<br />
+
+              <va-select
+                v-model="occupancy"
+                placeholder="Select unit.."
+                text-by="description"
+                track-by="id"
+                :options="occupancyOptions"
+                :error="!!occupancyErrors.length"
+                :error-messages="occupancyErrors"
+                class="mt-1"
+                @mousedown="
+                  () => {
+                    occupancyErrors = []
+                  }
+                "
+              />
+            </div>
+
             <div class="flex md3 sm6 xs12">
               <va-button
                 v-if="isUpdate"
@@ -274,7 +313,13 @@
       const size = ref('')
       const premise = ref('')
       const propertyID = ref('')
+      const managerID = ref('')
       const sizeUnit = ref({
+        id: 1,
+        description: '',
+      })
+
+      const occupancy = ref({
         id: 1,
         description: '',
       })
@@ -286,6 +331,9 @@
 
       const premiseErrors = ref<string[]>([])
       const propertyIDErrors = ref<string[]>([])
+      const managerIDErrors = ref<string[]>([])
+
+      const occupancyErrors = ref<string[]>([])
 
       const simpleOptions = ref([
         {
@@ -321,22 +369,38 @@
         },
       ])
 
+      const occupancyOptions = ref([
+        {
+          id: 1,
+          description: 'Vacant',
+        },
+        {
+          id: 2,
+          description: 'Occupied',
+        },
+      ])
+
       const toastText = ref('Unit added successfully!!!')
       const toastDuration = ref(2500)
       const toastPosition = ref<ToastPosition>('top-right')
 
+      // add units
       function add() {
-        let temp1
+        let temp1, temp2
         if (sizeUnit.value.description === 'meter') {
           temp1 = 0
         } else temp1 = 1
+        if (occupancy.value.description === 'vacant') temp2 = 0
+        else temp2 = 1
         if (
           unitNo.value != '' &&
           bedrooms.value.description != '' &&
           size.value != '' &&
           sizeUnit.value.description != '' &&
           premise.value != '' &&
-          propertyID.value != ''
+          propertyID.value != '' &&
+          managerID.value != '' &&
+          occupancy.value.description != ''
         ) {
           var data = JSON.stringify({
             unitNo: unitNo.value,
@@ -353,6 +417,7 @@
             communityId: null,
             clusterId: null,
             managerId: propertyID.value,
+            occupy: temp2,
           })
 
           temp
@@ -366,22 +431,25 @@
               })
 
               window.history.go(-1)
-
-              console.log(response.data.data)
-
-              // setLogin.setToken(response.data.access_token)
-              // service.setRefreshToken(response.data.refresh_token)
+              // console.log(response.data.data)
             })
             .catch((error) => {
-              console.log(error.response)
+              // console.log(error.response)
+              if (`${error.response.data.message}` === 'Please change unit name, unit name is already exists!')
+                init({
+                  message: 'Unit name already exists! Please change!',
+                  position: toastPosition.value,
+                  duration: Number(toastDuration.value),
+                  color: 'danger',
+                })
+              else
+                init({
+                  message: `${error.response.data.message}`,
+                  position: toastPosition.value,
+                  duration: Number(toastDuration.value),
+                  color: 'danger',
+                })
             })
-
-          // unitNo.value = ''
-          // bedrooms.value.description = ''
-          // size.value = ''
-          // premise.value = ''
-          // propertyID.value = ''
-          //  advancedList.value = ''
         } else {
           if (unitNo.value === '') unitNoErrors.value = unitNo.value ? [] : ['This field is required']
           if (bedrooms.value.description === '')
@@ -392,28 +460,29 @@
 
           if (premise.value === '') premiseErrors.value = premise.value ? [] : ['This field is required']
           if (propertyID.value === '') propertyIDErrors.value = propertyID.value ? [] : ['This field is required']
-
-          // init({
-          //   message: 'Please fill all the fields first',
-          //   position: 'top-right',
-          //   duration: Number(2500),
-          //   color: 'danger',
-          // })
+          if (managerID.value === '') managerIDErrors.value = managerID.value ? [] : ['This field is required']
+          if (occupancy.value.description === '')
+            occupancyErrors.value = occupancy.value.description ? [] : ['This field is required']
         }
       }
 
+      // edit units
       function edit() {
-        let temp1
+        let temp1, temp2
         if (sizeUnit.value.description === 'meter') {
           temp1 = 0
         } else temp1 = 1
+        if (occupancy.value.description === 'vacant') temp2 = 0
+        else temp2 = 1
         if (
           unitNo.value != '' &&
           bedrooms.value.description != '' &&
           size.value != '' &&
           sizeUnit.value.description != '' &&
           premise.value != '' &&
-          propertyID.value != ''
+          propertyID.value != '' &&
+          managerID.value != '' &&
+          occupancy.value.description != ''
         ) {
           var data = JSON.stringify({
             id: window.history.state.unitId,
@@ -431,6 +500,7 @@
             communityId: null,
             clusterId: null,
             managerId: propertyID.value,
+            occupy: temp2,
           })
 
           temp
@@ -444,22 +514,25 @@
               })
 
               window.history.go(-1)
-
-              console.log(response.data.data)
-
-              // setLogin.setToken(response.data.access_token)
-              // service.setRefreshToken(response.data.refresh_token)
+              // console.log(response.data.data)
             })
             .catch((error) => {
-              console.log(error.response)
+              // console.log(error.response)
+              if (`${error.response.data.message}` === 'Please change unit name, unit name is already exists!')
+                init({
+                  message: 'Unit name already exists! Please change!',
+                  position: toastPosition.value,
+                  duration: Number(toastDuration.value),
+                  color: 'danger',
+                })
+              else
+                init({
+                  message: `${error.response.data.message}`,
+                  position: toastPosition.value,
+                  duration: Number(toastDuration.value),
+                  color: 'danger',
+                })
             })
-
-          // unitNo.value = ''
-          // bedrooms.value.description = ''
-          // size.value = ''
-          // premise.value = ''
-          // propertyID.value = ''
-          //  advancedList.value = ''
         } else {
           if (unitNo.value === '') unitNoErrors.value = unitNo.value ? [] : ['This field is required']
           if (bedrooms.value.description === '')
@@ -470,22 +543,20 @@
 
           if (premise.value === '') premiseErrors.value = premise.value ? [] : ['This field is required']
           if (propertyID.value === '') propertyIDErrors.value = propertyID.value ? [] : ['This field is required']
-
-          // init({
-          //   message: 'Please fill all the fields first',
-          //   position: 'top-right',
-          //   duration: Number(2500),
-          //   color: 'danger',
-          // })
+          if (managerID.value === '') managerIDErrors.value = managerID.value ? [] : ['This field is required']
+          if (occupancy.value.description === '')
+            occupancyErrors.value = occupancy.value.description ? [] : ['This field is required']
         }
       }
 
+      //
       function showLoader() {
         setTimeout(() => {
           showSkeleton.value = false
         }, 500)
       }
 
+      // get params and state from route
       function getParams() {
         buildingName.value = window.history.state.buildingName
         totalFloors.value = window.history.state.totalFloors
@@ -499,40 +570,52 @@
         }
       }
 
+      // getting unit details to edit a certain unit
       function getUnitById() {
         temp
           .getUnit(window.history.state.unitId)
           .then((response) => {
             dataToUpdate.value = response.data.data
-
             unitNo.value = response.data.data.unitNo
             bedrooms.value.description = response.data.data.bedrooms
             size.value = response.data.data.size
             premise.value = response.data.data.premiseNo
             propertyID.value = response.data.data.managerId
+            managerID.value = response.data.data.managerId
+
             sizeUnit.value.id = response.data.data.sizeType
+            occupancy.value.id = response.data.data.occupy
             if (sizeUnit.value.id === 0) sizeUnit.value.description = 'meter'
             else sizeUnit.value.description = 'square meter'
-
+            if (occupancy.value.id === 0) occupancy.value.description = 'vacant'
+            else occupancy.value.description = 'occupied'
             radioSelectedOption.value = response.data.data.unitType
           })
-          .catch()
+          .catch((error) => {
+            init({
+              message: `${error.response.data.message}`,
+              position: toastPosition.value,
+              duration: Number(toastDuration.value),
+              color: 'danger',
+            })
+          })
       }
 
       showLoader()
       getParams()
-
       return {
         unitNo,
         bedrooms,
         size,
         premise,
         propertyID,
+        managerID,
         unitNoErrors,
         bedroomsErrors,
         sizeErrors,
         premiseErrors,
         propertyIDErrors,
+        managerIDErrors,
         simpleOptions,
         advancedList,
         add,
@@ -546,6 +629,9 @@
         sizeUnitErrors,
         isUpdate,
         edit,
+        occupancyOptions,
+        occupancyErrors,
+        occupancy,
       }
     },
     // data() {

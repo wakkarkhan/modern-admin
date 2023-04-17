@@ -13,6 +13,7 @@
       <div class="flex md6">
         <p class="mt-3 mb-2" style="font-size: 22px; font-weight: 500"><b>Buildings</b></p>
       </div>
+
       <!-- Go to manage buildings screen -->
       <div class="flex md6 ml-auto mt-3" style="text-align: end">
         <va-button preset="plain" icon-right="fa-arrow-circle-right" size="large" :to="{ name: 'leaflet-maps' }">
@@ -50,7 +51,6 @@
             <div class="row">
               <div class="flex xs5">
                 <div style="background-color: #eef1f5; border-radius: 50%; width: fit-content; padding: 15px 12px">
-                  <!-- <va-icon class="" name="home" color="#7367F0" size="large" /> -->
                   <i class="fa fa-cubes fa-lg" size="large"></i>
                 </div>
               </div>
@@ -201,31 +201,114 @@
     </va-card> -->
 
     <va-card class="flex mb-4 mt-3">
-      <!-- <va-card-title>{{ t('tables.basic') }}</va-card-title> -->
       <va-card-content>
-        <!-- <div class="row">
-          <div class="flex xs12 pt-0">
-            <p style="font-size: 20px"><b>Buildings</b></p>
+        <div class="row buildings-list">
+          <div class="flex xs8 pt-0">
+            <p style="font-size: 20px"><b>All Buildings</b></p>
           </div>
-        </div> -->
+          <div class="flex xs4 pt-0 text-end">
+            <va-input
+              v-model="searchFilter"
+              class="flex flex-col mb-2"
+              placeholder="Filter..."
+              @input="
+                () => {
+                  buildings.filter(() => {
+                    return buildings
+                  })
+                }
+              "
+            />
+          </div>
+        </div>
         <va-data-table
           :items="buildings"
           :columns="columns"
-          :per-page="10"
           :current-page="currentPage"
           :loading="isTableLoading"
+          :filter="filter"
+          @filtered="filteredCount = $event.items.length"
         >
-          <!-- <template #cell(#)="{rowData}"> {{ rowData }}</template> -->
+          <!-- <template #cell(#)> </template> -->
+
           <template #bodyAppend>
             <tr class="">
               <td colspan="12">
                 <div class="table-example--pagination mt-4">
-                  <va-pagination v-model="currentPage" input :pages="totalPages" />
+                  <!-- <va-pagination v-model="currentPage" input :pages="totalPages" /> -->
+                  <va-pagination v-model="currentPage" input :pages="totalPages">
+                    <!-- first page -->
+                    <template #firstPageLink="{ disabled }">
+                      <va-button
+                        preset="primary"
+                        :disabled="disabled"
+                        aria-label="go prev page"
+                        @click="
+                          () => {
+                            currentPage = 1
+                            getBuildings()
+                          }
+                        "
+                      >
+                        <i class="fa fa-angle-double-left" size="large"></i>
+                      </va-button>
+                    </template>
+
+                    <!-- previous page -->
+                    <template #prevPageLink="{ disabled }">
+                      <va-button
+                        preset="primary"
+                        :disabled="disabled"
+                        aria-label="go prev page"
+                        @click="
+                          () => {
+                            currentPage = currentPage - 1
+                            getBuildings()
+                          }
+                        "
+                      >
+                        <i class="fa fa-angle-left" size="large"></i>
+                      </va-button>
+                    </template>
+                    <!-- next page -->
+                    <template #nextPageLink="{ disabled }">
+                      <va-button
+                        preset="primary"
+                        :disabled="disabled"
+                        aria-label="go next page"
+                        @click="
+                          () => {
+                            currentPage = currentPage + 1
+                            getBuildings()
+                          }
+                        "
+                      >
+                        <i class="fa fa-angle-right" size="large"></i>
+                      </va-button>
+                    </template>
+                    <!-- last page -->
+                    <template #lastPageLink="{ disabled }">
+                      <va-button
+                        preset="primary"
+                        :disabled="disabled"
+                        aria-label="go prev page"
+                        @click="
+                          () => {
+                            currentPage = totalPages
+                            getBuildings()
+                          }
+                        "
+                      >
+                        <i class="fa fa-angle-double-right" size="large"></i>
+                      </va-button>
+                    </template>
+                  </va-pagination>
                 </div>
               </td>
             </tr>
           </template>
         </va-data-table>
+
         <!-- <div class="va-table-responsive">
            <table class="va-table">
             <thead>
@@ -270,14 +353,18 @@
   import { ref, Suspense } from 'vue'
   import { useI18n } from 'vue-i18n'
 
-  import data from '../../../../../src/pages/admin/maps/data-tables/data/users.json'
   import service from '../../../../../src/auth/service'
+  import debounce from 'lodash/debounce.js'
+
+  import { ToastPosition, useToast } from 'vuestic-ui'
 
   export default {
     setup() {
-      const users = ref(data.slice(0, 6))
+      const users = ref('')
       const { t } = useI18n()
       const setLogin = new service()
+
+      const { init } = useToast()
 
       const simpleOptions = ref([
         {
@@ -393,6 +480,10 @@
       const buildManager = ref('')
       const propertyManager = ref('')
 
+      const searchFilter = ref('')
+
+      const input = ref('')
+
       const showSkeleton = ref(true)
       const isTableLoading = ref(true)
 
@@ -439,7 +530,7 @@
       function getBuildings() {
         var data = JSON.stringify({
           page: currentPage.value,
-          limit: 100,
+          limit: perPage.value,
           type: 0,
           search: '',
         })
@@ -450,7 +541,7 @@
             // totalPages.value = response.data.data.state.page_limit
 
             if (perPage.value && perPage.value !== 0)
-              totalPages.value = Math.ceil(buildings.value.length / perPage.value)
+              totalPages.value = Math.ceil(response.data.data.state.data_count / perPage.value)
             else totalPages.value = buildings.value.length
 
             isTableLoading.value = false
@@ -463,6 +554,12 @@
           .catch((error) => {
             console.log(error.response)
             isTableLoading.value = false
+            init({
+              message: `${error.response.data.message}`,
+              position: 'top-right',
+              duration: Number(2500),
+              color: 'danger',
+            })
           })
       }
 
@@ -501,8 +598,46 @@
         propertyManagerOptions,
         isTableLoading,
         totalPages,
+        input,
+        filter: searchFilter,
+        isDebounceInput: false,
+        useCustomFilteringFn: false,
+        filteredCount: buildings.value.length,
+        searchFilter: searchFilter,
+        getBuildings,
       }
     },
+    // computed: {
+    //   customFilteringFn() {
+    //     return this.useCustomFilteringFn ? this.filterExact : undefined
+    //   },
+    // },
+    // methods: {
+    //   filterExact(source) {
+    //     if (this.filter === '') {
+    //       return true
+    //     }
+    //     return source?.toString?.() === this.filter
+    //   },
+
+    //   updateFilter(test) {
+    //     this.filter = test
+    //   },
+
+    //   debouncedUpdateFilter: debounce(function (filter) {
+    //     this.updateFilter(filter)
+    //   }, 600),
+    // },
+
+    // watch: {
+    //   input(newValue) {
+    //     if (this.isDebounceInput) {
+    //       this.debouncedUpdateFilter(newValue)
+    //     } else {
+    //       this.updateFilter(newValue)
+    //     }
+    //   },
+    // },
     // computed: {
     //   pages() {
     //     return this.perPage && this.perPage !== 0
@@ -539,5 +674,9 @@
 
   .va-input-wrapper {
     --va-input-wrapper-background: transparent;
+  }
+
+  .buildings-list {
+    align-items: baseline;
   }
 </style>

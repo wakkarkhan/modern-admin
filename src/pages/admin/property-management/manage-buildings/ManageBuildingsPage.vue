@@ -19,7 +19,7 @@
           <va-collapse class="mb-3">
             <template #header>
               <div class="row">
-                <div class="flex xs2">
+                <div class="flex xs12">
                   <va-button style="width: fit-content; border-radius: 5px"> Add Building </va-button>
                 </div>
               </div>
@@ -183,13 +183,7 @@
                 <p style="font-size: 20px"><b>All Buildings</b></p>
               </div>
             </div>
-            <va-data-table
-              :items="buildings"
-              :columns="columns"
-              :per-page="10"
-              :current-page="currentPage"
-              :loading="isTableLoading"
-            >
+            <va-data-table :items="buildings" :columns="columns" :current-page="currentPage" :loading="isTableLoading">
               <!-- <template #cell(#)> </template> -->
 
               <template #cell(actions)="{ rowData }">
@@ -254,7 +248,74 @@
                 <tr class="">
                   <td colspan="12">
                     <div class="table-example--pagination mt-4">
-                      <va-pagination v-model="currentPage" input :pages="totalPages" />
+                      <!-- <va-pagination v-model="currentPage" input :pages="totalPages" /> -->
+                      <va-pagination v-model="currentPage" input :pages="totalPages">
+                        <!-- first page -->
+                        <template #firstPageLink="{ disabled }">
+                          <va-button
+                            preset="primary"
+                            :disabled="disabled"
+                            aria-label="go prev page"
+                            @click="
+                              () => {
+                                currentPage = 1
+                                getBuildings()
+                              }
+                            "
+                          >
+                            <i class="fa fa-angle-double-left" size="large"></i>
+                          </va-button>
+                        </template>
+
+                        <!-- previous page -->
+                        <template #prevPageLink="{ disabled }">
+                          <va-button
+                            preset="primary"
+                            :disabled="disabled"
+                            aria-label="go prev page"
+                            @click="
+                              () => {
+                                currentPage = currentPage - 1
+                                getBuildings()
+                              }
+                            "
+                          >
+                            <i class="fa fa-angle-left" size="large"></i>
+                          </va-button>
+                        </template>
+                        <!-- next page -->
+                        <template #nextPageLink="{ disabled }">
+                          <va-button
+                            preset="primary"
+                            :disabled="disabled"
+                            aria-label="go next page"
+                            @click="
+                              () => {
+                                currentPage = currentPage + 1
+                                getBuildings()
+                              }
+                            "
+                          >
+                            <i class="fa fa-angle-right" size="large"></i>
+                          </va-button>
+                        </template>
+                        <!-- last page -->
+                        <template #lastPageLink="{ disabled }">
+                          <va-button
+                            preset="primary"
+                            :disabled="disabled"
+                            aria-label="go prev page"
+                            @click="
+                              () => {
+                                currentPage = totalPages
+                                getBuildings()
+                              }
+                            "
+                          >
+                            <i class="fa fa-angle-double-right" size="large"></i>
+                          </va-button>
+                        </template>
+                      </va-pagination>
                     </div>
                   </td>
                 </tr>
@@ -573,9 +634,10 @@
         { key: 'totalFloors', label: 'Floors', sortable: true },
         { key: 'totalProperties', label: 'total properties', sortable: true },
         { key: 'managerId', label: 'property manager', sortable: true },
-        { key: 'actions', label: '', sortable: true },
+        { key: 'actions', label: '' },
       ]
 
+      // Adding a new building
       function add() {
         if (
           buildName.value != '' &&
@@ -596,23 +658,36 @@
             .then(() => {
               isTableLoading.value = true
               getBuildings()
+              init({
+                message: toastText.value,
+                position: toastPosition.value,
+                duration: Number(toastDuration.value),
+                color: 'primary',
+              })
+              customHeaderAccordionValue.value = false
+              buildName.value = ''
+              totalFloors.value = ''
+              city.value = ''
+              area.value = ''
+              buildManager.value.description = ''
+              street.value = ''
             })
-            .catch()
-
-          init({
-            message: toastText.value,
-            position: toastPosition.value,
-            duration: Number(toastDuration.value),
-            color: 'primary',
-          })
-
-          customHeaderAccordionValue.value = false
-          buildName.value = ''
-          totalFloors.value = ''
-          city.value = ''
-          area.value = ''
-          buildManager.value.description = ''
-          street.value = ''
+            .catch((error) => {
+              if (`${error.response.data.message}` === 'Please change building name, building name is already exists!')
+                init({
+                  message: 'Building name already exists! Please change!',
+                  position: toastPosition.value,
+                  duration: Number(toastDuration.value),
+                  color: 'danger',
+                })
+              else
+                init({
+                  message: `${error.response.data.message}`,
+                  position: toastPosition.value,
+                  duration: Number(toastDuration.value),
+                  color: 'danger',
+                })
+            })
         } else {
           if (buildName.value === '') buildNameErrors.value = buildName.value ? [] : ['This field is required']
           if (totalFloors.value === '') totalFloorsErrors.value = totalFloors.value ? [] : ['This field is required']
@@ -638,6 +713,7 @@
 
       const idToDelete = ref('')
 
+      // setting id to delete
       function setIdtoDelete(id: string) {
         idToDelete.value = id
       }
@@ -651,10 +727,10 @@
         managerId: '',
         street: '',
       })
+
+      // update building
       function setRecordToUpdate(temp: any) {
         recordToUpdate.value = temp
-        console.log(recordToUpdate.value)
-
         buildName.value = recordToUpdate.value.name
         totalFloors.value = recordToUpdate.value.totalFloors
         city.value = recordToUpdate.value.city
@@ -663,6 +739,7 @@
         street.value = recordToUpdate.value.street
       }
 
+      // deleting a building
       function deleteBuilding() {
         console.log(idToDelete.value)
         temp
@@ -676,13 +753,21 @@
               color: 'primary',
             })
           })
-          .catch()
+          .catch((error) => {
+            init({
+              message: `${error.response.data.message}`,
+              position: 'top-right',
+              duration: Number(2500),
+              color: 'danger',
+            })
+          })
       }
 
+      // fetching all buildings
       function getBuildings() {
         var data = JSON.stringify({
-          page: 1,
-          limit: 100,
+          page: currentPage.value,
+          limit: perPage.value,
           type: 0,
           search: '',
         })
@@ -692,9 +777,9 @@
             isTableLoading.value = false
             buildings.value = response.data.data.building_data
             if (perPage.value && perPage.value !== 0)
-              totalPages.value = Math.ceil(buildings.value.length / perPage.value)
+              totalPages.value = Math.ceil(response.data.data.state.data_count / perPage.value)
             else totalPages.value = buildings.value.length
-            console.log(buildings.value)
+            // console.log(buildings.value)
 
             if (buildings.value.length === 0) totalPages.value = 1
           })
@@ -704,7 +789,9 @@
           })
       }
 
+      // update building
       function updateBuilding() {
+        showEditModal.value = true
         var data = JSON.stringify({
           id: recordToUpdate.value._id,
           name: buildName.value,
@@ -716,6 +803,7 @@
           .editBuilding(data)
           .then((response) => {
             getBuildings()
+            showEditModal.value = false
             init({
               message: 'Building Updated Successfully',
               position: 'top-right',
@@ -729,9 +817,26 @@
             buildManager.value.description = ''
             street.value = ''
           })
-          .catch()
+          .catch((error) => {
+            showEditModal.value = true
+            if (`${error.response.data.message}` === 'Please change building name, building name is already exists!')
+              init({
+                message: 'Building name already exists! Please change!',
+                position: toastPosition.value,
+                duration: Number(toastDuration.value),
+                color: 'danger',
+              })
+            else
+              init({
+                message: `${error.response.data.message}`,
+                position: toastPosition.value,
+                duration: Number(toastDuration.value),
+                color: 'danger',
+              })
+          })
       }
 
+      //
       function reset() {
         buildName.value = ''
         totalFloors.value = ''
@@ -783,6 +888,7 @@
         recordToUpdate,
         updateBuilding,
         reset,
+        getBuildings,
       }
     },
     // data() {
@@ -810,5 +916,9 @@
   .table-example--pagination {
     display: flex;
     justify-content: center;
+  }
+
+  .va-collapse__header-wrapper {
+    width: fit-content;
   }
 </style>

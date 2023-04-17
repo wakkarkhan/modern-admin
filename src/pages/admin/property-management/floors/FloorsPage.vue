@@ -78,8 +78,8 @@
           <va-collapse class="mb-2">
             <template #header>
               <div class="row">
-                <div class="flex xs2">
-                  <va-button style="width: fit-content; border-radius: 5px"> Add Building </va-button>
+                <div class="flex xs12">
+                  <va-button style="width: fit-content; border-radius: 5px"> Add Floor </va-button>
                 </div>
               </div>
             </template>
@@ -133,13 +133,13 @@
       <va-card-content>
         <div class="row">
           <div class="flex xs12 pt-0">
-            <p style="font-size: 20px"><b>All Buildings</b></p>
+            <p style="font-size: 20px"><b>All Floors</b></p>
           </div>
         </div>
         <va-data-table
           :items="floorsList"
           :columns="columns"
-          :per-page="10"
+          :per-page="perPage"
           :current-page="currentPage"
           :loading="isTableLoading"
         >
@@ -207,7 +207,73 @@
             <tr class="">
               <td colspan="12">
                 <div class="table-example--pagination mt-4">
-                  <va-pagination v-model="currentPage" input :pages="totalPages" />
+                  <va-pagination v-model="currentPage" input :pages="totalPages">
+                    <!-- first page -->
+                    <template #firstPageLink="{ disabled }">
+                      <va-button
+                        preset="primary"
+                        :disabled="disabled"
+                        aria-label="go prev page"
+                        @click="
+                          () => {
+                            currentPage = 1
+                            getAllFloors()
+                          }
+                        "
+                      >
+                        <i class="fa fa-angle-double-left" size="large"></i>
+                      </va-button>
+                    </template>
+
+                    <!-- previous page -->
+                    <template #prevPageLink="{ disabled }">
+                      <va-button
+                        preset="primary"
+                        :disabled="disabled"
+                        aria-label="go prev page"
+                        @click="
+                          () => {
+                            currentPage = currentPage - 1
+                            getAllFloors()
+                          }
+                        "
+                      >
+                        <i class="fa fa-angle-left" size="large"></i>
+                      </va-button>
+                    </template>
+                    <!-- next page -->
+                    <template #nextPageLink="{ disabled }">
+                      <va-button
+                        preset="primary"
+                        :disabled="disabled"
+                        aria-label="go next page"
+                        @click="
+                          () => {
+                            currentPage = currentPage + 1
+                            getAllFloors()
+                          }
+                        "
+                      >
+                        <i class="fa fa-angle-right" size="large"></i>
+                      </va-button>
+                    </template>
+                    <!-- last page -->
+                    <template #lastPageLink="{ disabled }">
+                      <va-button
+                        preset="primary"
+                        :disabled="disabled"
+                        aria-label="go prev page"
+                        @click="
+                          () => {
+                            currentPage = totalPages
+                            getAllFloors()
+                          }
+                        "
+                      >
+                        <i class="fa fa-angle-double-right" size="large"></i>
+                      </va-button>
+                    </template>
+                  </va-pagination>
                 </div>
               </td>
             </tr>
@@ -243,6 +309,7 @@
     </va-card>
 
     <va-modal
+      ref="modal"
       v-model="showBlurredModal"
       message="Are you sure you want to delete this floor ??"
       :ok-text="t('modal.confirm')"
@@ -299,15 +366,6 @@
       const route = useRoute()
       const { t } = useI18n()
 
-      // const markers = ref([
-      //   {
-      //     'marker-id': 0,
-      //     coords: [54.8, 38.9],
-      //     clusterName: '1',
-      //     balloonTemplate: '<div>"Your custom template"</div>',
-      //   },
-      // ])
-
       const showSkeleton = ref(true)
       const floor = ref('')
       const customHeaderAccordionValue = ref(false)
@@ -333,12 +391,15 @@
       const isTableLoading = ref(true)
       const showEditModal = ref(false)
 
+      const totalRecordsToCompare = ref('')
+      const floorsListTest = ref([])
+
       const columns = [
         // { key: '#', label: '#', sortable: true },
         { key: 'name', label: 'Floors', sortable: true },
         { key: 'totalProperties', label: 'Properties', sortable: true },
         { key: 'managerId', label: 'Property Manager', sortable: true },
-        { key: 'actions', label: '', sortable: true },
+        { key: 'actions' },
       ]
 
       const users = [
@@ -364,6 +425,7 @@
         },
       ]
 
+      // Add Floor
       function add() {
         if (floor.value != '') {
           var data = JSON.stringify({
@@ -376,24 +438,34 @@
             .then((response) => {
               isTableLoading.value = true
               getAllFloors()
+              // console.log(response.data.data)
+              init({
+                message: toastText.value,
+                position: toastPosition.value,
+                duration: Number(toastDuration.value),
+                color: 'primary',
+              })
 
-              console.log(response.data.data)
-
-              // setLogin.setToken(response.data.access_token)
-              // service.setRefreshToken(response.data.refresh_token)
+              customHeaderAccordionValue.value = false
+              floor.value = ''
             })
             .catch((error) => {
               console.log(error.response)
+              if (`${error.response.data.message}` === 'Please change floor name, floor name is already exists!')
+                init({
+                  message: 'Floor name already exists! Please change!',
+                  position: toastPosition.value,
+                  duration: Number(toastDuration.value),
+                  color: 'danger',
+                })
+              else
+                init({
+                  message: `${error.response.data.message}`,
+                  position: toastPosition.value,
+                  duration: Number(toastDuration.value),
+                  color: 'danger',
+                })
             })
-          init({
-            message: toastText.value,
-            position: toastPosition.value,
-            duration: Number(toastDuration.value),
-            color: 'primary',
-          })
-
-          customHeaderAccordionValue.value = false
-          floor.value = ''
         } else {
           if (floor.value === '') floorErrors.value = floor.value ? [] : ['This field is required']
           // init({
@@ -407,10 +479,12 @@
 
       const idToDelete = ref('')
 
+      // setting id value to delete
       function setIdtoDelete(id: string) {
         idToDelete.value = id
       }
 
+      //  deleting floor
       function deleteFloor() {
         console.log(idToDelete.value)
         temp
@@ -424,7 +498,14 @@
               color: 'primary',
             })
           })
-          .catch()
+          .catch((error) => {
+            init({
+              message: `${error.response.data.message}`,
+              position: toastPosition.value,
+              duration: Number(toastDuration.value),
+              color: 'danger',
+            })
+          })
       }
 
       const popover = ref({
@@ -459,12 +540,15 @@
         }, 500)
       }
 
+      // getting params and state from route
       function getParams() {
         buildingName.value = window.history.state.buildingName
         totalFloors.value = window.history.state.totalFloors
         buildingManager.value = window.history.state.managerId
         buildingId.value = window.history.state.buildingId
       }
+
+      //fetching all floors list
       function getAllFloors() {
         // for query
         // let data = {
@@ -475,24 +559,32 @@
 
         var data = JSON.stringify({
           page: currentPage.value,
-          limit: 100,
+          limit: perPage.value,
           buildingId: route.params.buildingId,
         })
+        isTableLoading.value = false
         temp
           .getAllFloors(data)
           .then((response) => {
             floorsList.value = response.data.data.floor_data
 
+            // totalRecordsToCompare.value = response.data.data.state.data_count
+
             if (perPage.value && perPage.value !== 0)
-              totalPages.value = Math.ceil(floorsList.value.length / perPage.value)
+              totalPages.value = Math.ceil(response.data.data.state.data_count / perPage.value)
             else totalPages.value = floorsList.value.length
             isTableLoading.value = false
 
             if (floorsList.value.length === 0) totalPages.value = 1
           })
           .catch((error) => {
-            console.log(error.response)
             isTableLoading.value = false
+            init({
+              message: `${error.response.data.message}`,
+              position: toastPosition.value,
+              duration: Number(toastDuration.value),
+              color: 'danger',
+            })
           })
       }
       function pages() {
@@ -503,13 +595,15 @@
 
       const recordToUpdate = ref('')
 
+      //
       function setRecordToUpdate(temp: string, id: string) {
-        console.log()
         floor.value = temp
         recordToUpdate.value = id
       }
 
+      //  update record
       function updateFloor() {
+        showEditModal.value = true
         var data = JSON.stringify({
           id: recordToUpdate.value,
           managerId: buildingManager.value,
@@ -528,9 +622,43 @@
               color: 'primary',
             })
             floor.value = ''
+            showEditModal.value = false
           })
-          .catch()
+          .catch((error) => {
+            showEditModal.value = true
+            if (`${error.response.data.message}` === 'Please change floor name, floor name is already exists!')
+              init({
+                message: 'Floor name already exists! Please change!',
+                position: toastPosition.value,
+                duration: Number(toastDuration.value),
+                color: 'danger',
+              })
+            else
+              init({
+                message: `${error.response.data.message}`,
+                position: toastPosition.value,
+                duration: Number(toastDuration.value),
+                color: 'danger',
+              })
+          })
       }
+
+      // function checkRecordsForValidation() {
+      //   if (floorsListTest.value.length === 0) {
+      //     var data = JSON.stringify({
+      //       page: 1,
+      //       limit: totalRecordsToCompare.value,
+      //       buildingId: route.params.buildingId,
+      //     })
+      //     isTableLoading.value = false
+      //     temp
+      //       .getAllFloors(data)
+      //       .then((response) => {
+      //         floorsListTest.value = response.data.data.floor_data
+      //       })
+      //       .catch((error) => {})
+      //   }
+      // }
 
       showLoader()
       getParams()
@@ -564,6 +692,11 @@
         setRecordToUpdate,
         recordToUpdate,
         updateFloor,
+        pages,
+        getAllFloors,
+        // checkRecordsForValidation,
+        totalRecordsToCompare,
+        floorsListTest,
       }
     },
     // data() {
@@ -592,5 +725,9 @@
   .table-example--pagination {
     display: flex;
     justify-content: center;
+  }
+
+  .va-collapse__header-wrapper {
+    width: fit-content;
   }
 </style>

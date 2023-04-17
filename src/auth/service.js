@@ -6,10 +6,8 @@ export default class service {
     // You can add your headers here
     // ================================
     baseURL: 'https://propertise.api.nodejsapi.ml',
-    // timeout: 1000,
   })
 
-  // jwtConfig <= Will be used by this service
   config = { ...defaultConfig }
 
   setToken(value) {

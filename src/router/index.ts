@@ -25,7 +25,7 @@ const routes: Array<RouteRecordRaw> = [
           {
             name: 'maplibre-maps',
             path: 'buildings',
-            component: () => import('../pages/admin/maps/maplibre-maps/MapLibreMapsPage.vue'),
+            component: () => import('../pages/admin/property-management/buildings/BuildingsPage.vue'),
             meta: {
               wikiLink: 'https://github.com/epicmaxco/vuestic-admin/wiki/Maps',
             },
@@ -33,31 +33,25 @@ const routes: Array<RouteRecordRaw> = [
           {
             name: 'yandex-maps',
             path: '/:buildingId/floors',
-            component: () => import('../pages/admin/maps/yandex-maps/YandexMapsPage.vue'),
-            meta: {
-              wikiLink: 'https://github.com/epicmaxco/vuestic-admin/wiki/Maps',
-            },
+            component: () => import('../pages/admin/property-management/floors/FloorsPage.vue'),
           },
           {
             name: 'leaflet-maps',
             path: 'manage-buildings',
-            component: () => import('../pages/admin/maps/leaflet-maps/LeafletMapsPage.vue'),
-            meta: {
-              wikiLink: 'https://github.com/epicmaxco/vuestic-admin/wiki/Maps',
-            },
+            component: () => import('../pages/admin/property-management/manage-buildings/ManageBuildingsPage.vue'),
           },
           {
             name: 'bubble-maps',
             path: '/:buildingId/floors/:floorId/units',
-            component: () => import('../pages/admin/maps/bubble-maps/BubbleMapsPage.vue'),
-            meta: {
-              wikiLink: 'https://github.com/epicmaxco/vuestic-admin/wiki/Maps',
-            },
+            component: () => import('../pages/admin/property-management/units/UnitsPage.vue'),
+            // meta: {
+            //   wikiLink: 'https://github.com/epicmaxco/vuestic-admin/wiki/Maps',
+            // },
           },
           {
             name: 'line-maps',
             path: '/:buildingId/floors/:floorId/add-units',
-            component: () => import('../pages/admin/maps/line-maps/LineMapsPage.vue'),
+            component: () => import('../pages/admin/property-management/add-units/AddUnitsPage.vue'),
             meta: {
               wikiLink: 'https://github.com/epicmaxco/vuestic-admin/wiki/Maps',
             },

@@ -18,7 +18,7 @@
           icon-right="fa-arrow-circle-right"
           size="large"
           :to="{
-            name: 'line-maps',
+            name: 'add-units',
             params: { buildingId: buildingId, floorId: floorId },
             state: {
               totalFloors: totalFloors,
@@ -39,14 +39,14 @@
         <va-card stripe stripe-color="primary">
           <va-card-title> Building Name </va-card-title>
           <va-card-content>
-            <div class="row">
+            <div class="row card-details">
               <div class="flex xs3">
                 <div style="background-color: #eef1f5; border-radius: 50%; width: fit-content; padding: 15px 15px">
                   <i class="fa fa-building fa-lg" size="large"></i>
                 </div>
               </div>
               <div class="flex xs7">
-                <p class="pt-3" style="font-size: 18px">{{ buildingName }}</p>
+                <p class="" style="font-size: 18px">{{ buildingName }}</p>
               </div>
             </div>
           </va-card-content>
@@ -57,18 +57,16 @@
         <va-card stripe stripe-color="primary">
           <va-card-title> Total Floors </va-card-title>
           <va-card-content>
-            <div class="row">
+            <div class="row card-details">
               <div class="flex xs3">
                 <div style="background-color: #eef1f5; border-radius: 50%; width: fit-content; padding: 15px 15px">
                   <i class="fa fa-th fa-lg" size="large"></i>
                 </div>
               </div>
               <div class="flex xs7">
-                <p class="pt-3" style="font-size: 18px">{{ totalFloors }}</p>
+                <p class="" style="font-size: 18px">{{ totalFloors }}</p>
               </div>
             </div>
-
-            <!-- <p class="rich-theme-card-text">{{ totalFloors }}</p> -->
           </va-card-content>
         </va-card>
       </div>
@@ -77,17 +75,16 @@
         <va-card stripe stripe-color="primary">
           <va-card-title> Building Manager </va-card-title>
           <va-card-content>
-            <div class="row">
+            <div class="row card-details">
               <div class="flex xs3">
                 <div style="background-color: #eef1f5; border-radius: 50%; width: fit-content; padding: 15px 15px">
                   <i class="fa fa-user fa-lg" size="large"></i>
                 </div>
               </div>
               <div class="flex xs7">
-                <p class="pt-3" style="font-size: 18px">{{ buildingManager }}</p>
+                <p class="" style="font-size: 18px">{{ buildingManager }}</p>
               </div>
             </div>
-            <!-- <p class="rich-theme-card-text">{{ buildingManager }}</p> -->
           </va-card-content>
         </va-card>
       </div>
@@ -95,7 +92,6 @@
 
     <!-- All units table -->
     <va-card class="flex mb-4 mt-2">
-      <!-- <va-card-title>{{ t('tables.basic') }}</va-card-title> -->
       <va-card-content>
         <div class="row">
           <div class="flex xs12 pt-0">
@@ -120,7 +116,7 @@
             <va-popover :color="popover.color" message="Edit Details" placement="top" open>
               <router-link
                 :to="{
-                  name: 'line-maps',
+                  name: 'add-units',
                   params: { buildingId: buildingId, floorId: floorId },
                   state: {
                     totalFloors: totalFloors,
@@ -155,7 +151,6 @@
             <tr class="">
               <td colspan="12">
                 <div class="table-example--pagination mt-4">
-                  <!-- <va-pagination v-model="currentPage" input :pages="totalPages" /> -->
                   <va-pagination v-model="currentPage" input :pages="totalPages">
                     <!-- first page -->
                     <template #firstPageLink="{ disabled }">
@@ -228,49 +223,6 @@
             </tr>
           </template>
         </va-data-table>
-
-        <!-- <div class="table-wrapper">
-          <table class="va-table" style="width: -webkit-fill-available">
-            <thead>
-              <tr width="100%">
-                <th width="10%">Property ID</th>
-                <th width="10%">Unit No</th>
-                <th width="10%">Unit Type</th>
-                <th width="10%">Bedrooms</th>
-                <th width="10%">Size</th>
-
-                <th width="10%">Premise No</th>
-
-                <th width="10%">Occupancy</th>
-
-                <th width="10%">Property Manager</th>
-                <th width="20%"></th>
-              </tr>
-            </thead>
-
-            <tbody>
-              <tr v-for="user in users" :key="user.id">
-                <td>{{ user.property_id }}</td>
-                <td>{{ user.unit_no }}</td>
-                <td>{{ user.unit_type }}</td>
-                <td>{{ user.bedrooms }}</td>
-                <td>{{ user.size }}</td>
-
-                <td>{{ user.premise_no }}</td>
-                <td>{{ user.occupancy }}</td>
-                <td>{{ user.property_manager }}</td>
-                <td style="text-align: center">
-                  <va-popover :color="popover.color" :message="popover.message" placement="top" open>
-                    <va-button class="mr-2 mb-2" color="dark" :to="{ name: 'bubble-maps' }">Units</va-button>
-                  </va-popover>
-
-                  <va-button class="mr-2 mb-2" color="warning" :to="{ name: 'line-maps' }"> Edit</va-button>
-                  <va-button class="mr-2 mb-2" color="danger" @click="showBlurredModal = true"> Delete</va-button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div> -->
       </va-card-content>
     </va-card>
 
@@ -290,9 +242,6 @@
   import { useI18n } from 'vue-i18n'
   import { useRoute } from 'vue-router'
   import { ToastPosition, useToast } from 'vuestic-ui'
-
-  // import BubbleMap from './BubbleMap.vue'
-  // import { bubbleMapData } from '../../../../data/maps/bubbleMapData'
   import service from '../../../../../src/auth/service'
 
   export default {
@@ -491,14 +440,6 @@
         getAllUnits,
       }
     },
-    // data() {
-    //   return {}
-    // },
-    // computed: {
-    //   pages() {
-    //     return this.perPage && this.perPage !== 0 ? Math.ceil(this.units.length / this.perPage) : this.units.length
-    //   },
-    // },
   }
 </script>
 
@@ -516,5 +457,9 @@
   .table-example--pagination {
     display: flex;
     justify-content: center;
+  }
+
+  .card-details {
+    align-items: center;
   }
 </style>

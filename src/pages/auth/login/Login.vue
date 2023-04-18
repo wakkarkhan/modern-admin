@@ -29,7 +29,6 @@
     />
 
     <div class="auth-layout__options d-flex align-center justify-space-between">
-      <!-- <va-checkbox v-model="keepLoggedIn" class="mb-0" :label="t('auth.keep_logged_in')" /> -->
       <div></div>
       <router-link class="ml-1 va-link" :to="{ name: 'recover-password' }">{{
         t('auth.recover_password')
@@ -75,7 +74,6 @@
       setLogin
         .login(data)
         .then((response) => {
-          // localStorage.setItem('userData', JSON.stringify(response))
           localStorage.setItem('accessToken', JSON.stringify(response.data.data.token))
           localStorage.setItem('isUser', 'true')
 
@@ -86,27 +84,17 @@
             color: 'primary',
           })
 
-          // setLogin.setToken(response.data.data.access_token)
-          // service.setRefreshToken(response.data.refresh_token)
           return router.push({ name: 'dashboard' })
         })
         .catch((error) => {
           console.log(error.response)
           emailErrors.value = ['Invalid Credentials']
           passwordErrors.value = ['Invalid Credentials']
-          // init({
-          //     message: 'Invalid Credentials',
-          //     position: 'top-right',
-          //     duration: Number(2500),
-          //     color: 'danger',
-          //   })
         })
     } else {
       emailErrors.value = email.value ? [] : ['Email is required']
       passwordErrors.value = password.value ? [] : ['Password is required']
       return
     }
-
-    // router.push({ name: 'dashboard' })
   }
 </script>

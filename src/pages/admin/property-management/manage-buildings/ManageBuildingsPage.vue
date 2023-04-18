@@ -12,9 +12,6 @@
 
     <div class="row">
       <div class="flex md12 xs12">
-        <!-- <div class="row mt-2">
-            <div class="flex xs12" style="padding: 0"> -->
-
         <va-accordion v-model="customHeaderAccordionValue">
           <va-collapse class="mb-3">
             <template #header>
@@ -25,7 +22,6 @@
               </div>
             </template>
             <div class="my-3 pb-3">
-              <!-- <va-card-content> -->
               <div class="my-2" style="background-color: white">
                 <div class="row mx-2 my-2 py-2">
                   <!-- Building Name-->
@@ -42,9 +38,6 @@
                         }
                       "
                     />
-                    <!-- <template #prepend>
-                          <p style="width: 100px">Building Name:</p>
-                        </template> -->
                   </div>
 
                   <!-- Total Floors -->
@@ -62,9 +55,6 @@
                         }
                       "
                     />
-                    <!-- <template #prepend>
-                          <p style="width: 100px">Total Floors:</p>
-                        </template> -->
                   </div>
 
                   <!-- City -->
@@ -85,11 +75,6 @@
                         }
                       "
                     />
-
-                    <!-- <template #prepend>
-                          <p style="width: 100px">City:</p>
-                        </template> -->
-                    <!-- </va-select> -->
                   </div>
 
                   <!-- Area -->
@@ -110,10 +95,6 @@
                         }
                       "
                     />
-                    <!-- <template #prepend>
-                          <p style="width: 100px">Development:</p>
-                        </template> 
-                      </va-select> -->
                   </div>
 
                   <!-- Street-->
@@ -130,10 +111,6 @@
                         }
                       "
                     />
-                    <!-- <template #prepend>
-                         
-                          <p style="width: 100px">Street:</p>
-                        </template> -->
                   </div>
 
                   <!-- Building Manager  -->
@@ -154,10 +131,6 @@
                         }
                       "
                     />
-                    <!-- <template #prepend>
-                          <p style="width: 100px">Building Manager:</p>
-                        </template> 
-                      </va-select> -->
                   </div>
 
                   <div class="flex md3 sm6 xs12">
@@ -167,16 +140,11 @@
                   </div>
                 </div>
               </div>
-              <!-- </va-card-content> -->
             </div>
           </va-collapse>
         </va-accordion>
 
-        <!-- </div>
-          </div> -->
-
         <va-card class="flex my-3">
-          <!-- <va-card-title>{{ t('tables.basic') }}</va-card-title> -->
           <va-card-content>
             <div class="row">
               <div class="flex xs12 pt-0">
@@ -184,13 +152,11 @@
               </div>
             </div>
             <va-data-table :items="buildings" :columns="columns" :current-page="currentPage" :loading="isTableLoading">
-              <!-- <template #cell(#)> </template> -->
-
               <template #cell(actions)="{ rowData }">
                 <va-popover :color="popover.color" :message="popover.message" placement="top" open>
                   <router-link
                     :to="{
-                      name: 'yandex-maps',
+                      name: 'floors',
                       params: { buildingId: rowData._id },
                       state: {
                         totalFloors: rowData.totalFloors,
@@ -248,7 +214,6 @@
                 <tr class="">
                   <td colspan="12">
                     <div class="table-example--pagination mt-4">
-                      <!-- <va-pagination v-model="currentPage" input :pages="totalPages" /> -->
                       <va-pagination v-model="currentPage" input :pages="totalPages">
                         <!-- first page -->
                         <template #firstPageLink="{ disabled }">
@@ -321,36 +286,6 @@
                 </tr>
               </template>
             </va-data-table>
-            <!-- <div class="table-wrapper">
-              <table class="va-table" style="width: -webkit-fill-available">
-                <thead>
-                  <tr>
-                    <th width="20%">Building Name</th>
-                    <th width="15%">Total Floors</th>
-                    <th width="15%">Total Properties</th>
-                    <th width="15%">Building Manager</th>
-                    <th width="25%"></th>
-                  </tr>
-                </thead>
-
-                <tbody>
-                  <tr v-for="user in users" :key="user.id">
-                    <td>{{ user.build_name }}</td>
-                    <td>{{ user.total_floor }}</td>
-                    <td>{{ user.total_properties }}</td>
-                    <td>{{ user.build_manager }}</td>
-                    <td>
-                      <va-popover :color="popover.color" :message="popover.message" placement="top" open>
-                        <va-button class="mr-2 mb-2" color="dark" :to="{ name: 'yandex-maps' }">Floors</va-button>
-                      </va-popover>
-
-                      <va-button class="mr-2 mb-2" color="warning"> Rename</va-button>
-                      <va-button class="mr-2 mb-2" color="danger" @click="showBlurredModal = true"> Delete</va-button>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div> -->
           </va-card-content>
         </va-card>
 
@@ -491,12 +426,9 @@
 
 <script lang="ts">
   import { ref, Suspense, computed } from 'vue'
-  // import LeafletMap from './LeafletMap.vue'
   import { ToastPosition, useToast } from 'vuestic-ui'
-  // import ToastPositionPicker from './ToastPositionPicker.vue'
   import { useI18n } from 'vue-i18n'
 
-  // import data from '../../../../../src/pages/admin/maps/data-tables/data/users.json'
   import service from '../../../../../src/auth/service'
 
   export default {
@@ -629,7 +561,6 @@
       })
 
       const columns = [
-        // { key: '#', label: '#', sortable: true },
         { key: 'name', label: 'Building name', sortable: true },
         { key: 'totalFloors', label: 'Floors', sortable: true },
         { key: 'totalProperties', label: 'total properties', sortable: true },
@@ -784,8 +715,14 @@
             if (buildings.value.length === 0) totalPages.value = 1
           })
           .catch((error) => {
-            console.log(error.response)
+            // console.log(error.response)
             isTableLoading.value = false
+            init({
+              message: `${error.response.data.message}`,
+              position: 'top-right',
+              duration: Number(2500),
+              color: 'danger',
+            })
           })
       }
 
@@ -891,19 +828,6 @@
         getBuildings,
       }
     },
-    // data() {
-    //   return {}
-    // },
-    // computed: {
-    //   // pages() {
-    //   //   return this.perPage && this.perPage !== 0
-    //   //     ? Math.ceil(this.buildings.length / this.perPage)
-    //   //     : this.buildings.length
-    //   // },
-    // },
-    // mounted() {
-
-    // },
   }
 </script>
 <style lang="scss">

@@ -19,17 +19,16 @@
           <va-card stripe stripe-color="primary">
             <va-card-title> Building Name </va-card-title>
             <va-card-content>
-              <div class="row">
+              <div class="row card-details">
                 <div class="flex xs3">
                   <div style="background-color: #eef1f5; border-radius: 50%; width: fit-content; padding: 15px 15px">
                     <i class="fa fa-building fa-lg" size="large"></i>
                   </div>
                 </div>
                 <div class="flex xs7">
-                  <p class="pt-3" style="font-size: 18px">{{ buildingName }}</p>
+                  <p class="" style="font-size: 18px">{{ buildingName }}</p>
                 </div>
               </div>
-              <!-- <p class="rich-theme-card-text">{{ buildingName }}</p> -->
             </va-card-content>
           </va-card>
         </div>
@@ -38,17 +37,16 @@
           <va-card stripe stripe-color="primary">
             <va-card-title> Total Floors </va-card-title>
             <va-card-content>
-              <div class="row">
+              <div class="row card-details">
                 <div class="flex xs3">
                   <div style="background-color: #eef1f5; border-radius: 50%; width: fit-content; padding: 15px 15px">
                     <i class="fa fa-th fa-lg" size="large"></i>
                   </div>
                 </div>
                 <div class="flex xs7">
-                  <p class="pt-3" style="font-size: 18px">{{ totalFloors }}</p>
+                  <p class="" style="font-size: 18px">{{ totalFloors }}</p>
                 </div>
               </div>
-              <!-- <p class="rich-theme-card-text">{{ totalFloors }}</p> -->
             </va-card-content>
           </va-card>
         </div>
@@ -57,17 +55,16 @@
           <va-card stripe stripe-color="primary">
             <va-card-title> Building Manager </va-card-title>
             <va-card-content>
-              <div class="row">
+              <div class="row card-details">
                 <div class="flex xs3">
                   <div style="background-color: #eef1f5; border-radius: 50%; width: fit-content; padding: 15px 15px">
                     <i class="fa fa-user fa-lg" size="large"></i>
                   </div>
                 </div>
                 <div class="flex xs7">
-                  <p class="pt-3" style="font-size: 18px">{{ buildingManager }}</p>
+                  <p class="" style="font-size: 18px">{{ buildingManager }}</p>
                 </div>
               </div>
-              <!-- <p class="rich-theme-card-text">{{ buildingManager }}</p> -->
             </va-card-content>
           </va-card>
         </div>
@@ -83,7 +80,6 @@
       </div>
 
       <va-card class="flex mb-4 mt-2">
-        <!-- <va-card-title>{{ t('tables.basic') }}</va-card-title> -->
         <va-card-content>
           <va-file-upload v-model="advancedList" dropzone />
           <div class="row">
@@ -101,9 +97,6 @@
                   }
                 "
               />
-              <!-- <template #prepend>
-                  <p style="width: 100px">Unit No:</p>
-                </template> -->
             </div>
 
             <!-- Bedrooms -->
@@ -124,11 +117,6 @@
                   }
                 "
               />
-
-              <!-- <template #prepend>
-                 
-                  <p style="width: 100px">Bedrooms:</p>
-                </template> -->
             </div>
 
             <!-- Size -->
@@ -162,10 +150,6 @@
                   }
                 "
               />
-
-              <!-- <template #prepend>
-                  <p style="width: 100px">Size:</p>
-                </template> -->
             </div>
 
             <!-- Premise No-->
@@ -182,10 +166,6 @@
                   }
                 "
               />
-              <!-- <template #prepend>
-                
-                  <p style="width: 100px">Premise No./ID:</p>
-             </template> -->
             </div>
 
             <!-- Property ID-->
@@ -202,13 +182,9 @@
                   }
                 "
               />
-              <!-- <template #prepend>
-                 
-                  <p style="width: 100px">Property Id:</p>
-                </template> -->
             </div>
 
-            <!-- Property ID-->
+            <!-- Manager ID-->
             <div class="flex md4 sm6 xs12">
               Manager Id:
               <va-input
@@ -222,14 +198,11 @@
                   }
                 "
               />
-              <!-- <template #prepend>
-                 
-                  <p style="width: 100px">Property Id:</p>
-                </template> -->
             </div>
+
+            <!-- Occupancy -->
             <div class="flex md4 sm6 xs12">
               Occupancy:<br />
-
               <va-select
                 v-model="occupancy"
                 placeholder="Select unit.."
@@ -276,11 +249,7 @@
   import { ref } from 'vue'
   import { useRoute } from 'vue-router'
 
-  // import LineMap from '../../../../components/maps/LineMap.vue'
-  // import { lineMapData } from '../../../../data/maps/lineMapData'
-
   import { ToastPosition, useToast } from 'vuestic-ui'
-  // import ToastPositionPicker from './ToastPositionPicker.vue'
   import service from '../../../../../src/auth/service'
 
   export default {
@@ -292,9 +261,6 @@
       const buildingManager = ref('')
       const buildingId = ref('')
       const isUpdate = ref(false)
-      // const mainCity = ref(lineMapData.mainCity)
-      // const homeCity = ref(lineMapData.homeCity)
-      // const cities = ref(lineMapData.cities)
 
       const radioSelectedOption = ref('penthouse')
       const advancedList = ref([])
@@ -634,16 +600,6 @@
         occupancy,
       }
     },
-    // data() {
-    //   return {
-    //     // showSkeleton: true,
-    //   }
-    // },
-    // mounted() {
-    //   // setTimeout(() => {
-    //   //   showSkeleton.value = false
-    //   // }, 500)
-    // },
   }
 </script>
 
@@ -652,5 +608,9 @@
     .va-card__inner {
       border-radius: inherit;
     }
+  }
+
+  .card-details {
+    align-items: center;
   }
 </style>

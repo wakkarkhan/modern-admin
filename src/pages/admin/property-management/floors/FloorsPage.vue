@@ -15,18 +15,16 @@
         <va-card stripe stripe-color="primary">
           <va-card-title> Building Name </va-card-title>
           <va-card-content>
-            <div class="row">
+            <div class="row card-details">
               <div class="flex xs3">
                 <div style="background-color: #eef1f5; border-radius: 50%; width: fit-content; padding: 15px 15px">
-                  <!-- <va-icon class="" name="home" color="#7367F0" size="large" /> -->
                   <i class="fa fa-building fa-lg" size="large"></i>
                 </div>
               </div>
               <div class="flex xs7">
-                <p class="pt-3" style="font-size: 18px">{{ buildingName }}</p>
+                <p class="" style="font-size: 18px">{{ buildingName }}</p>
               </div>
             </div>
-            <!-- <p class="rich-theme-card-text">{{ buildingName }}</p> -->
           </va-card-content>
         </va-card>
       </div>
@@ -35,18 +33,16 @@
         <va-card stripe stripe-color="primary">
           <va-card-title> Total Floors </va-card-title>
           <va-card-content>
-            <div class="row">
+            <div class="row card-details">
               <div class="flex xs3">
                 <div style="background-color: #eef1f5; border-radius: 50%; width: fit-content; padding: 15px 15px">
-                  <!-- <va-icon class="" name="home" color="#7367F0" size="large" /> -->
                   <i class="fa fa-th fa-lg" size="large"></i>
                 </div>
               </div>
               <div class="flex xs7">
-                <p class="pt-3" style="font-size: 18px">{{ totalFloors }}</p>
+                <p class="" style="font-size: 18px">{{ totalFloors }}</p>
               </div>
             </div>
-            <!-- <p class="rich-theme-card-text">{{ totalFloors }}</p> -->
           </va-card-content>
         </va-card>
       </div>
@@ -55,18 +51,16 @@
         <va-card stripe stripe-color="primary">
           <va-card-title> Building Manager </va-card-title>
           <va-card-content>
-            <div class="row">
+            <div class="row card-details">
               <div class="flex xs3">
                 <div style="background-color: #eef1f5; border-radius: 50%; width: fit-content; padding: 15px 15px">
-                  <!-- <va-icon class="" name="home" color="#7367F0" size="large" /> -->
                   <i class="fa fa-user fa-lg" size="large"></i>
                 </div>
               </div>
               <div class="flex xs7">
-                <p class="pt-3" style="font-size: 18px">{{ buildingManager }}</p>
+                <p class="" style="font-size: 18px">{{ buildingManager }}</p>
               </div>
             </div>
-            <!-- <p class="rich-theme-card-text">{{ buildingManager }}</p> -->
           </va-card-content>
         </va-card>
       </div>
@@ -83,11 +77,8 @@
                 </div>
               </div>
             </template>
-            <!-- <template #header>
-              <va-button style="width: 100%"> Add New Floor </va-button>
-            </template> -->
+
             <div class="my-3 pb-3">
-              <!-- <va-card-content> -->
               <div class="my-2" style="background-color: white">
                 <div class="row mx-2 my-2 py-2">
                   <!-- Building Name-->
@@ -104,10 +95,6 @@
                         }
                       "
                     />
-                    <!-- <template #prepend>
-                     
-                      <p style="width: 100px">Floor:</p>
-                    </template> -->
                   </div>
 
                   <div class="flex md3 sm6 xs12" style="">
@@ -124,41 +111,22 @@
             </div>
           </va-collapse>
         </va-accordion>
-        <!-- </va-card-content> -->
       </div>
     </div>
 
     <va-card class="flex my-3">
-      <!-- <va-card-title>{{ t('tables.basic') }}</va-card-title> -->
       <va-card-content>
         <div class="row">
           <div class="flex xs12 pt-0">
             <p style="font-size: 20px"><b>All Floors</b></p>
           </div>
         </div>
-        <va-data-table
-          :items="floorsList"
-          :columns="columns"
-          :per-page="perPage"
-          :current-page="currentPage"
-          :loading="isTableLoading"
-        >
-          <!-- <template #cell(empty)>
-            <h5>No records found</h5>
-          </template> -->
-
-          <!-- <template #cell(#)> </template> -->
-
+        <va-data-table :items="floorsList" :columns="columns" :current-page="currentPage" :loading="isTableLoading">
           <template #cell(actions)="{ rowData }">
-            <!-- <va-button class="mr-2 mb-2" color="dark" :to="{ name: 'bubble-maps' }">Units</va-button>
-                  </va-popover>
-                  <va-button class="mr-2 mb-2" color="warning"> Rename</va-button>
-                  <va-button class="mr-2 mb-2" color="danger" @click="showBlurredModal = true"> Delete</va-button> -->
-
             <va-popover :color="popover.color" :message="popover.message" placement="top" open>
               <router-link
                 :to="{
-                  name: 'bubble-maps',
+                  name: 'units',
                   params: { buildingId: buildingId, floorId: rowData._id },
                   state: {
                     totalFloors: totalFloors,
@@ -279,32 +247,6 @@
             </tr>
           </template>
         </va-data-table>
-        <!-- <div class="table-wrapper">
-          <table class="va-table" style="width: -webkit-fill-available">
-            <thead>
-              <tr>
-                <th width="30%">Floors</th>
-                <th width="30">Total Properties</th>
-                <th width="25%"></th>
-              </tr>
-            </thead>
-
-            <tbody>
-              <tr v-for="user in users" :key="user.id">
-                <td>{{ user.floors }}</td>
-                <td>{{ user.total_properties }}</td>
-                <td>
-                  <va-popover :color="popover.color" :message="popover.message" placement="top" open>
-                    <va-button class="mr-2 mb-2" color="dark" :to="{ name: 'bubble-maps' }">Units</va-button>
-                  </va-popover>
-
-                  <va-button class="mr-2 mb-2" color="warning"> Rename</va-button>
-                  <va-button class="mr-2 mb-2" color="danger" @click="showBlurredModal = true"> Delete</va-button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div> -->
       </va-card-content>
     </va-card>
 
@@ -350,13 +292,8 @@
 <script lang="ts">
   import { ref } from 'vue'
   import { useRoute } from 'vue-router'
-
-  // No TS declarations are provided - ignoring the error
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  // import { yandexMap as YandexMap, ymapMarker as YandexMapMarker } from 'vue-yandex-maps'
   import { ToastPosition, useToast } from 'vuestic-ui'
-  // import ToastPositionPicker from './ToastPositionPicker.vue'
+
   import { useI18n } from 'vue-i18n'
   import service from '../../../../../src/auth/service'
 
@@ -395,7 +332,6 @@
       const floorsListTest = ref([])
 
       const columns = [
-        // { key: '#', label: '#', sortable: true },
         { key: 'name', label: 'Floors', sortable: true },
         { key: 'totalProperties', label: 'Properties', sortable: true },
         { key: 'managerId', label: 'Property Manager', sortable: true },
@@ -468,12 +404,6 @@
             })
         } else {
           if (floor.value === '') floorErrors.value = floor.value ? [] : ['This field is required']
-          // init({
-          //   message: 'Please first fill floor value',
-          //   position: 'top-right',
-          //   duration: Number(2500),
-          //   color: 'danger',
-          // })
         }
       }
 
@@ -550,13 +480,6 @@
 
       //fetching all floors list
       function getAllFloors() {
-        // for query
-        // let data = {
-        //   params: {
-        //     buildingId: route.params.buildingId,
-        //   },
-        // }
-
         var data = JSON.stringify({
           page: currentPage.value,
           limit: perPage.value,
@@ -567,8 +490,6 @@
           .getAllFloors(data)
           .then((response) => {
             floorsList.value = response.data.data.floor_data
-
-            // totalRecordsToCompare.value = response.data.data.state.data_count
 
             if (perPage.value && perPage.value !== 0)
               totalPages.value = Math.ceil(response.data.data.state.data_count / perPage.value)
@@ -643,23 +564,6 @@
           })
       }
 
-      // function checkRecordsForValidation() {
-      //   if (floorsListTest.value.length === 0) {
-      //     var data = JSON.stringify({
-      //       page: 1,
-      //       limit: totalRecordsToCompare.value,
-      //       buildingId: route.params.buildingId,
-      //     })
-      //     isTableLoading.value = false
-      //     temp
-      //       .getAllFloors(data)
-      //       .then((response) => {
-      //         floorsListTest.value = response.data.data.floor_data
-      //       })
-      //       .catch((error) => {})
-      //   }
-      // }
-
       showLoader()
       getParams()
       getAllFloors()
@@ -694,26 +598,10 @@
         updateFloor,
         pages,
         getAllFloors,
-        // checkRecordsForValidation,
         totalRecordsToCompare,
         floorsListTest,
       }
     },
-    // data() {
-    //   return {}
-    // },
-    // computed: {
-    //   pages() {
-    //     return this.perPage && this.perPage !== 0
-    //       ? Math.ceil(this.floorsList.length / this.perPage)
-    //       : this.floorsList.length
-    //   },
-    // },
-    // mounted() {
-    //   // setTimeout(() => {
-    //   //   this.showSkeleton = false
-    //   // }, 500)
-    // },
   }
 </script>
 
@@ -729,5 +617,8 @@
 
   .va-collapse__header-wrapper {
     width: fit-content;
+  }
+  .card-details {
+    align-items: center;
   }
 </style>

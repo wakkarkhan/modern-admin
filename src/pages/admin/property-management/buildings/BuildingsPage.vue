@@ -1,6 +1,5 @@
 <!-- Buildings -->
 <template>
-  <!-- <va-inner-loading v-if="showSkeleton" loading :size="60" style="justify-content: center; margin-top: 300px" /> -->
   <div class="markup-tables flex">
     <div class="row">
       <div class="flex md12">
@@ -16,7 +15,7 @@
 
       <!-- Go to manage buildings screen -->
       <div class="flex md6 ml-auto mt-3" style="text-align: end">
-        <va-button preset="plain" icon-right="fa-arrow-circle-right" size="large" :to="{ name: 'leaflet-maps' }">
+        <va-button preset="plain" icon-right="fa-arrow-circle-right" size="large" :to="{ name: 'manage-buildings' }">
           Manage Buildings
         </va-button>
       </div>
@@ -26,7 +25,6 @@
     <div class="row">
       <div class="flex xs12 sm6 md2">
         <va-card stripe stripe-color="primary">
-          <!-- <va-card-title> Buildings </va-card-title> -->
           <va-card-content>
             <div class="row">
               <div class="flex xs5">
@@ -36,7 +34,7 @@
               </div>
 
               <div class="flex xs7">
-                <h2 class="va-h5 ma-0">{{ buildings.length }}</h2>
+                <h2 class="va-h5 ma-0">{{ totalBuildings }}</h2>
                 <p class="">Buildings</p>
               </div>
             </div>
@@ -46,7 +44,6 @@
       <!-- units card -->
       <div class="flex xs12 sm6 md2">
         <va-card stripe stripe-color="primary">
-          <!-- <va-card-title> Units </va-card-title> -->
           <va-card-content>
             <div class="row">
               <div class="flex xs5">
@@ -63,36 +60,8 @@
         </va-card>
       </div>
     </div>
-    <!-- <div class="row">
-      <div v-for="(info, idx) in infoTiles" :key="idx" class="flex xs12 sm6">
-        <va-card class="mb-2" :color="info.color">
-          <va-card-content>
-            <h2 class="va-h2 ma-0" style="color: white">{{ info.value }}</h2>
-            <p style="color: white">{{ info.text }}</p>
-          </va-card-content>
-        </va-card>
-      </div>
-    </div> -->
-
-    <!-- <div class="row mb-3">
-      <div class="flex md2 sm6 xs12">
-        <h6 class="bgwhite p-2 rounded-2" style="width:fit-content; background-color: white; border-radius: 10px; padding:10px">
-            Buildings: 25
-          </h6>
-        </div>
-        <div class="flex md2 sm6 xs12">
-        <h6 class="bgwhite p-2 rounded-2" style="width:fit-content; background-color: white; border-radius: 10px; padding:10px">
-            Units: 76454
-          </h6>
-        </div>
-        <div class="flex md2 sm6 xs12" style="margin-left: auto">
-          <va-button class="mr-2 mb-2" size="large" :to="{ name: 'leaflet-maps' }"> Manage Buildings</va-button>
-        </div>
-    </div> -->
 
     <!-- Search Filters -->
-    <!-- <va-card class="mb-2">
-      <va-card-content> -->
     <div class="row mb-3">
       <!-- Develpoment -->
       <div class="flex md3 sm6 xs12">
@@ -197,9 +166,8 @@
         </va-select>
       </div>
     </div>
-    <!-- </va-card-content>
-    </va-card> -->
 
+    <!-- All Buildings Table -->
     <va-card class="flex mb-4 mt-3">
       <va-card-content>
         <div class="row buildings-list">
@@ -229,13 +197,10 @@
           :filter="filter"
           @filtered="filteredCount = $event.items.length"
         >
-          <!-- <template #cell(#)> </template> -->
-
           <template #bodyAppend>
             <tr class="">
               <td colspan="12">
                 <div class="table-example--pagination mt-4">
-                  <!-- <va-pagination v-model="currentPage" input :pages="totalPages" /> -->
                   <va-pagination v-model="currentPage" input :pages="totalPages">
                     <!-- first page -->
                     <template #firstPageLink="{ disabled }">
@@ -308,48 +273,12 @@
             </tr>
           </template>
         </va-data-table>
-
-        <!-- <div class="va-table-responsive">
-           <table class="va-table">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Development Name</th>
-                <th>Floor</th>
-                <th>Unit ID</th>
-                <th>Unit Type</th>
-                <th>Unit Number</th>
-                <th>Bedrooms</th>
-                <th>Occupancy</th>
-                <th>Building Manager</th>
-                <th>Property Manager</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              <tr v-for="(building, index) in buildings" :key="building._id">
-                <td>{{ index + 1 }}</td>
-                <td>{{ building.name }}</td>
-                <td>{{ building.totalFloors }}</td>
-                <td>{{ building.id }}</td>
-                <td>{{ building.type }}</td>
-                <td>{{  878}}</td>
-                <td>{{ 3 }}</td>
-                <td> vacant</td>
-                <td>{{ building.managerId}}</td>
-                <td>{{ building.managerId }}</td>
-                <td></td>
-              </tr>
-            </tbody>
-          </table>
-        </div> -->
       </va-card-content>
     </va-card>
   </div>
 </template>
 
 <script lang="ts">
-  // import MapLibreMap from './MapLibreMap.vue'
   import { ref, Suspense } from 'vue'
   import { useI18n } from 'vue-i18n'
 
@@ -362,7 +291,7 @@
     setup() {
       const users = ref('')
       const { t } = useI18n()
-      const setLogin = new service()
+      const temp = new service()
 
       const { init } = useToast()
 
@@ -471,6 +400,8 @@
         },
       ])
 
+      const totalBuildings = ref('')
+
       const development = ref('')
       const unitID = ref('')
       const unitType = ref('')
@@ -492,24 +423,7 @@
       const currentPage = ref(1)
       const totalPages = ref(1)
 
-      // const infoTiles = ref([
-      //   {
-      //     color: 'success',
-      //     value: '256',
-      //     text: 'Buildings',
-      //     icon: '',
-      //   },
-
-      //   {
-      //     color: 'info',
-      //     value: '564333',
-      //     text: 'Units',
-      //     icon: '',
-      //   },
-      // ])
-
       const columns = [
-        // { key: '#', label: '#', sortable: true },
         { key: 'name', label: 'Development name', sortable: true },
         { key: 'totalFloors', label: 'Floors', sortable: true },
         { key: 'id', label: 'Unit ID', sortable: true },
@@ -527,6 +441,7 @@
         }, 500)
       }
 
+      // fetching buildings
       function getBuildings() {
         var data = JSON.stringify({
           page: currentPage.value,
@@ -534,11 +449,11 @@
           type: 0,
           search: '',
         })
-        setLogin
+        temp
           .getAllBuildings(data)
           .then((response) => {
             buildings.value = response.data.data.building_data
-            // totalPages.value = response.data.data.state.page_limit
+            totalBuildings.value = response.data.data.state.data_count
 
             if (perPage.value && perPage.value !== 0)
               totalPages.value = Math.ceil(response.data.data.state.data_count / perPage.value)
@@ -547,9 +462,6 @@
             isTableLoading.value = false
 
             if (buildings.value.length === 0) totalPages.value = 1
-
-            // setLogin.setToken(response.data.access_token)
-            // service.setRefreshToken(response.data.refresh_token)
           })
           .catch((error) => {
             console.log(error.response)
@@ -573,7 +485,6 @@
       getBuildings()
       pages()
       return {
-        // infoTiles,
         development,
         unitID,
         unitType,
@@ -605,46 +516,9 @@
         filteredCount: buildings.value.length,
         searchFilter: searchFilter,
         getBuildings,
+        totalBuildings,
       }
     },
-    // computed: {
-    //   customFilteringFn() {
-    //     return this.useCustomFilteringFn ? this.filterExact : undefined
-    //   },
-    // },
-    // methods: {
-    //   filterExact(source) {
-    //     if (this.filter === '') {
-    //       return true
-    //     }
-    //     return source?.toString?.() === this.filter
-    //   },
-
-    //   updateFilter(test) {
-    //     this.filter = test
-    //   },
-
-    //   debouncedUpdateFilter: debounce(function (filter) {
-    //     this.updateFilter(filter)
-    //   }, 600),
-    // },
-
-    // watch: {
-    //   input(newValue) {
-    //     if (this.isDebounceInput) {
-    //       this.debouncedUpdateFilter(newValue)
-    //     } else {
-    //       this.updateFilter(newValue)
-    //     }
-    //   },
-    // },
-    // computed: {
-    //   pages() {
-    //     return this.perPage && this.perPage !== 0
-    //       ? Math.ceil(this.buildings.length / this.perPage)
-    //       : this.buildings.length
-    //   },
-    // },
   }
 </script>
 
